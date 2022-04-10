@@ -21,7 +21,7 @@ const config = {
   },
   output: {
     filename: 'js/[name].js',
-    publicPath: '/dist/',
+    publicPath: 'dist/',
   },
   optimization: {
     splitChunks: {
@@ -63,7 +63,7 @@ const config = {
     new HtmlWebpackHarddiskPlugin(),
   ],
   devServer: {
-    publicPath: '/dist/',
+    publicPath: 'dist/',
   },
 };
 
