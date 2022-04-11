@@ -2,6 +2,10 @@
 
 A tool to visualize the `.tja` chart files. Forked from [Snack](https://github.com/Snack-X)'s [tja-tools](https://github.com/Snack-X/tja-tools).
 
+## Run
+
+Download https://github.com/WHMHammer/tja-tools/releases/download/v2.0.4/tja-tools.html, and open it in your browser.
+
 ## Build
 
 Install Node v14:
@@ -32,7 +36,7 @@ Build:
 npm run build
 ```
 
-You shall then open `index.html` in your browser.
+You shall then open `index.html` (not `src/index.html`) in your browser.
 
 ## Progress
 
