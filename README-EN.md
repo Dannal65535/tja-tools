@@ -1,16 +1,16 @@
-# TJA工具
+# TJA Tools
 
-将`.tja`文件转化为图片。由[Snack](https://github.com/Snack-X)的[tja-tools](https://github.com/Snack-X/tja-tools)分叉。
+A tool to visualize the `.tja` chart files. Forked from [Snack](https://github.com/Snack-X)'s [tja-tools](https://github.com/Snack-X/tja-tools).
 
-[English README](README-EN.md)
+[中文README](README.md)
 
-## 运行
+## Run
 
-下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.0/tja-tools.html)并用浏览器打开。
+Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.0/tja-tools.html), and open it in your browser.
 
-## 构建
+## Build
 
-安装Node v14：
+Install Node v14:
 
 ```
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
@@ -19,36 +19,36 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 nvm install 14.19.1
 ```
 
-克隆代码库：
+Clone the repo:
 
 ```
 git clone https://github.com/WHMHammer/tja-tools
 cd tja-tools
 ```
 
-安装其它依赖：
+Install other dependencies:
 
 ```
 npm install
 ```
 
-构建：
+Build:
 
 ```
 npm run build
 ```
 
-接着在浏览器中打开`index.html`（注意不是`src/index.html`）。
+You shall then open `index.html` (not `src/index.html`) in your browser.
 
-## 示例
+## Example
 
 ![](示例-春节序曲-谱面.png)
 
 ![](示例-春节序曲-统计.png)
 
-## 进度
+## Progress
 
-- 全局元信息
+- Global Header
     - [x] TITLE:
     - [x] SUBTITLE:
     - [x] BPM:
@@ -61,7 +61,7 @@ npm run build
     - [x] GENRE:
     - [ ] SIDE:
     - [ ] STYLE:
-- 各难度内部元信息
+- Per-course Headers
     - COURSE:
         - [x] Easy / 0
         - [x] Normal / 1
@@ -72,7 +72,7 @@ npm run build
     - [x] BALLOON:
     - [x] SCOREINIT:
     - [x] SCOREDIFF:
-- 指令
+- Command
     - [ ] #START
     - [ ] #END
     - [x] #GOGOSTART
@@ -93,27 +93,27 @@ npm run build
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
 
-## 版本历史
+## Version History
 
 <details>
     <summary>v2.1.0</summary>
     <ul>
-        <li>谱面分歧</li>
-        注：目前硬编码为解析<code>#M</code>（达人）分支。适用于大部分谱面
+        <li>Branching support</li>
+        Note: hard-coded to take the <code>#M</code> (master) branch. Works for most charts
     </ul>
 </details>
 
 <details>
     <summary>v2.0.x</summary>
     <ul>
-        <li>里魔王难度</li>
-        <li>文档</li>
+        <li>Edit Course support</li>
+        <li>Documentation</li>
     </ul>
 </details>
 
 <details>
     <summary>v1.x</summary>
     <ul>
-        <li><a href="https://github.com/Snack-X" target="_blank">Snack</a>原本的<a href="https://github.com/Snack-X/tja-tools" target="_blank">tja-tools</a></li>
+        <li><a href="https://github.com/Snack-X" target="_blank">Snack</a>'s original <a href="https://github.com/Snack-X/tja-tools" target="_blank">tja-tools</a></li>
     </ul>
 </details>
