@@ -6,7 +6,7 @@ A tool to visualize the `.tja` chart files. Forked from [Snack](https://github.c
 
 ## Run
 
-Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.0/tja-tools.html), and open it in your browser.
+Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html), and open it in your browser.
 
 ## Build
 
@@ -54,12 +54,9 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
     - [x] BPM:
     - [x] WAVE:
     - [x] OFFSET:
-    - [ ] SONGVOL:
-    - [ ] SEVOL:
     - [x] DEMOSTART:
     - [ ] SCOREMODE:
     - [x] GENRE:
-    - [ ] SIDE:
     - [ ] STYLE:
 - Per-course Headers
     - COURSE:
@@ -73,41 +70,45 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
     - [x] SCOREINIT:
     - [x] SCOREDIFF:
 - Command
-    - [ ] #START
-    - [ ] #END
+    - [x] #START
+    - [x] #END
     - [x] #GOGOSTART
     - [x] #GOGOEND
     - [x] #MEASURE
     - [x] #SCROLL
     - [x] #BPMCHANGE
     - [ ] #DELAY
-    - [ ] #BRANCHSTART
-    - [ ] #BRANCHEND
-    - [ ] #SECTION
+    - [x] #BRANCHSTART
+    - [x] #BRANCHEND
     - [x] #N
     - [x] #E
     - [x] #M
     - [ ] #LEVELHOLD
-    - [ ] #BMSCROLL
-    - [ ] #HBSCROLL
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
 
 ## Version History
 
 <details>
+    <summary>v2.1.1</summary>
+    <ul>
+        <li>More complete branching support (now works with songs like Anzu no Uta, but still leave </code>#LEVELHOLD</code> unsupported)</li>
+    </ul>
+</details>
+
+<details>
     <summary>v2.1.0</summary>
     <ul>
-        <li>Branching support</li>
-        Note: hard-coded to take the <code>#M</code> (master) branch. Works for most charts
+        <li>Rough branching support</li>
+        Note: hard-coded to take the <code>#M</code> (master) branch. Works for most charts (counterexample: <em>Anzu no Uta</em>)
     </ul>
 </details>
 
 <details>
     <summary>v2.0.x</summary>
     <ul>
-        <li>Edit Course support</li>
-        <li>Documentation</li>
+        <li>Now supports Edit/Ura courses</li>
+        <li>Added documentation</li>
     </ul>
 </details>
 

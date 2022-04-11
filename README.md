@@ -6,7 +6,7 @@
 
 ## 运行
 
-下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.0/tja-tools.html)并用浏览器打开。
+下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html)并用浏览器打开。
 
 ## 构建
 
@@ -54,12 +54,9 @@ npm run build
     - [x] BPM:
     - [x] WAVE:
     - [x] OFFSET:
-    - [ ] SONGVOL:
-    - [ ] SEVOL:
     - [x] DEMOSTART:
     - [ ] SCOREMODE:
     - [x] GENRE:
-    - [ ] SIDE:
     - [ ] STYLE:
 - 各难度内部元信息
     - COURSE:
@@ -73,41 +70,45 @@ npm run build
     - [x] SCOREINIT:
     - [x] SCOREDIFF:
 - 指令
-    - [ ] #START
-    - [ ] #END
+    - [x] #START
+    - [x] #END
     - [x] #GOGOSTART
     - [x] #GOGOEND
     - [x] #MEASURE
     - [x] #SCROLL
     - [x] #BPMCHANGE
     - [ ] #DELAY
-    - [ ] #BRANCHSTART
-    - [ ] #BRANCHEND
-    - [ ] #SECTION
+    - [x] #BRANCHSTART
+    - [x] #BRANCHEND
     - [x] #N
     - [x] #E
     - [x] #M
     - [ ] #LEVELHOLD
-    - [ ] #BMSCROLL
-    - [ ] #HBSCROLL
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
 
 ## 版本历史
 
 <details>
+    <summary>v2.1.1</summary>
+    <ul>
+        <li>更完整的谱面分歧支持（现在可正确解析如《杏之歌》的谱面，但尚不支持<code>#LEVELHOLD</code>）</li>
+    </ul>
+</details>
+
+<details>
     <summary>v2.1.0</summary>
     <ul>
-        <li>谱面分歧</li>
-        注：目前硬编码为解析<code>#M</code>（达人）分支。适用于大部分谱面
+        <li>初步谱面分歧支持</li>
+        注：目前硬编码为解析<code>#M</code>（达人）分支。适用于大部分谱面（反例：《杏之歌》）
     </ul>
 </details>
 
 <details>
     <summary>v2.0.x</summary>
     <ul>
-        <li>里魔王难度</li>
-        <li>文档</li>
+        <li>现可解析里魔王谱面</li>
+        <li>完善了文档</li>
     </ul>
 </details>
 

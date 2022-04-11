@@ -116,8 +116,8 @@ function getCourse(tjaHeaders, lines) {
     // Process lines
     let measureDividend = 4, measureDivisor = 4;
     let measureProperties = {}, measureData = '', measureEvents = [];
-    let current_branch = 'M';
-    let target_branch = 'M';
+    let current_branch = 'N';
+    let target_branch = 'N';
 
     for (const line of lines) {
         if (line.type === 'header') {
@@ -152,46 +152,22 @@ function getCourse(tjaHeaders, lines) {
         }
         else if (line.type === 'command') {
             switch (line.name) {
-                case 'MEASURE':
-                    let matchMeasure = line.value.match(/(\d+)\/(\d+)/);
-                    if (!matchMeasure) break;
-
-                    measureDividend = parseInt(matchMeasure[1], 10);
-                    measureDivisor = parseInt(matchMeasure[2], 10);
+                case 'BRANCHSTART':
+                    let values = line.value.split(',');
+                    if (values[0] === 'r') {
+                        if (values.length >= 3) target_branch = 'M';
+                        else if (values.length === 2) target_branch = 'E';
+                        else target_branch = 'N';
+                    }
+                    else if (values[0] === 'p') {
+                        if (values.length >= 3 && parseFloat(values[2]) <= 100) target_branch = 'M';
+                        else if (values.length >= 2 && parseFloat(values[1]) <= 100) target_branch = 'E';
+                        else target_branch = 'N';
+                    }
                     break;
 
-                case 'GOGOSTART':
-                    measureEvents.push({
-                        name: 'gogoStart',
-                        position: measureData.length,
-                    });
-                    break;
-
-                case 'GOGOEND':
-                    measureEvents.push({
-                        name: 'gogoEnd',
-                        position: measureData.length,
-                    });
-                    break;
-
-                case 'SCROLL':
-                    measureEvents.push({
-                        name: 'scroll',
-                        position: measureData.length,
-                        value: parseFloat(line.value),
-                    });
-                    break;
-
-                case 'BPMCHANGE':
-                    measureEvents.push({
-                        name: 'bpm',
-                        position: measureData.length,
-                        value: parseFloat(line.value),
-                    });
-                    break;
-
-                case 'TTBREAK':
-                    measureProperties['ttBreak'] = true;
+                case 'BRANCHEND':
+                    current_branch = target_branch;
                     break;
 
                 case 'N':
@@ -205,6 +181,64 @@ function getCourse(tjaHeaders, lines) {
                 case 'M':
                     current_branch = 'M';
                     break;
+
+                case 'START':
+                    current_branch = 'N';
+                    target_branch = 'N';
+                    break;
+
+                case 'END':
+                    current_branch = 'N';
+                    target_branch = 'N';
+                    break;
+
+                default:
+                    if (current_branch != target_branch) {
+                        break;
+                    }
+                    switch (line.name) {
+                        case 'MEASURE':
+                            let matchMeasure = line.value.match(/(\d+)\/(\d+)/);
+                            if (!matchMeasure) break;
+
+                            measureDividend = parseInt(matchMeasure[1], 10);
+                            measureDivisor = parseInt(matchMeasure[2], 10);
+                            break;
+
+                        case 'GOGOSTART':
+                            measureEvents.push({
+                                name: 'gogoStart',
+                                position: measureData.length,
+                            });
+                            break;
+
+                        case 'GOGOEND':
+                            measureEvents.push({
+                                name: 'gogoEnd',
+                                position: measureData.length,
+                            });
+                            break;
+
+                        case 'SCROLL':
+                            measureEvents.push({
+                                name: 'scroll',
+                                position: measureData.length,
+                                value: parseFloat(line.value),
+                            });
+                            break;
+
+                        case 'BPMCHANGE':
+                            measureEvents.push({
+                                name: 'bpm',
+                                position: measureData.length,
+                                value: parseFloat(line.value),
+                            });
+                            break;
+
+                        case 'TTBREAK':
+                            measureProperties['ttBreak'] = true;
+                            break;
+                    }
             }
         }
         else if (line.type === 'data' && current_branch === target_branch) {
