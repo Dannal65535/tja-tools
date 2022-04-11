@@ -38,6 +38,10 @@ npm run build
 
 You shall then open `index.html` (not `src/index.html`) in your browser.
 
+## Example
+
+![](example-春节序曲.png)
+
 ## Progress
 
 - Global Header
