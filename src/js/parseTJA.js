@@ -51,7 +51,6 @@ function parseLine(line) {
 
     // header
     if (match = line.match(/^([A-Z]+):(.+)/i)) {
-        const name = match[1];
         const nameUpper = match[1].toUpperCase();
         const value = match[2];
 
@@ -72,8 +71,8 @@ function parseLine(line) {
             };
         }
     }
+    // command
     else if (match = line.match(/^#([A-Z]+)(?:\s+(.+))?/i)) {
-        const name = match[1];
         const nameUpper = match[1].toUpperCase();
         const value = match[2] || '';
 
@@ -85,6 +84,7 @@ function parseLine(line) {
             };
         }
     }
+    // data
     else if (match = line.match(/^([0-9]*,?)$/)) {
         const data = match[1];
 
@@ -116,6 +116,8 @@ function getCourse(tjaHeaders, lines) {
     // Process lines
     let measureDividend = 4, measureDivisor = 4;
     let measureProperties = {}, measureData = '', measureEvents = [];
+    let current_branch = 'M';
+    let target_branch = 'M';
 
     for (const line of lines) {
         if (line.type === 'header') {
@@ -191,9 +193,21 @@ function getCourse(tjaHeaders, lines) {
                 case 'TTBREAK':
                     measureProperties['ttBreak'] = true;
                     break;
+
+                case 'N':
+                    current_branch = 'N';
+                    break;
+
+                case 'E':
+                    current_branch = 'E';
+                    break;
+
+                case 'M':
+                    current_branch = 'M';
+                    break;
             }
         }
-        else if (line.type === 'data') {
+        else if (line.type === 'data' && current_branch === target_branch) {
             let data = line.data;
 
             if (data.endsWith(',')) {

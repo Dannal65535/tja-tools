@@ -4,7 +4,7 @@ A tool to visualize the `.tja` chart files. Forked from [Snack](https://github.c
 
 ## Run
 
-Download https://github.com/WHMHammer/tja-tools/releases/download/v2.0.4/tja-tools.html, and open it in your browser.
+Download https://github.com/WHMHammer/tja-tools/releases/download/v2.1.0/tja-tools.html, and open it in your browser.
 
 ## Build
 
@@ -76,11 +76,37 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
     - [ ] #BRANCHSTART
     - [ ] #BRANCHEND
     - [ ] #SECTION
-    - [ ] #N
-    - [ ] #E
-    - [ ] #M
+    - [x] #N
+    - [x] #E
+    - [x] #M
     - [ ] #LEVELHOLD
     - [ ] #BMSCROLL
     - [ ] #HBSCROLL
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
+
+## Version History
+
+<details>
+    <summary>v2.1.0</summary>
+    <ul>
+        <li>Branching support</li>
+        Note: hard-coded to take the <code>#M</code> branch. Works for most charts
+    </ul>
+</details>
+
+<details>
+    <summary>v2.0.x</summary>
+    <ul>
+        <li>Edit Course support</li>
+        <li>Initial release</li>
+        <li>Documentation</li>
+    </ul>
+</details>
+
+<details>
+    <summary>v1.x</summary>
+    <ul>
+        <li><a href="https://github.com/Snack-X" target="_blank">Snack</a>'s original <a href="https://github.com/Snack-X/tja-tools" target="_blank">tja-tools</a></li>
+    </ul>
+</details>
