@@ -214,8 +214,8 @@ export default function (chart, courseId) {
 
         drawText(ctx, 8, 8, chart.headers.title, 'bold 28px sans-serif', '#000', 'top', 'left');
 
-        const difficulty = ['Easy', 'Normal', 'Hard', 'Oni'];
-        const levelMax = [5, 7, 8, 10];
+        const difficulty = ['Easy', 'Normal', 'Hard', 'Oni', 'Edit'];
+        const levelMax = [5, 7, 8, 10, 10];
         const difficultyText = (
             difficulty[course.course] + ' ' +
             '★'.repeat(course.headers.level) +

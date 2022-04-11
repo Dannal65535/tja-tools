@@ -55,7 +55,7 @@ You shall then open `index.html` in your browser.
         - [x] Normal / 1
         - [x] Hard / 2
         - [x] Oni / 3
-        - [ ] Edit / 4
+        - [x] Edit / Ura / 4
     - [x] LEVEL:
     - [x] BALLOON:
     - [x] SCOREINIT:
