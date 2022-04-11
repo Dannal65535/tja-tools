@@ -3,8 +3,8 @@ import { Buffer } from 'buffer';
 import $ from 'umbrellajs';
 import * as d3 from 'd3';
 
-import chardet from '../deps/node-chardet-0.7.0';
-import iconv from '../deps/iconv-lite-0.4.24';
+import chardet from 'chardet';
+import iconv from 'iconv-lite';
 
 import parseTJA from './parseTJA';
 import drawChart from './drawChart';

@@ -1,6 +1,6 @@
 {
   "name": "tja-tools",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "author": {
     "name": "WHMHammer",
     "email": "whmhammer@gmail.com",
@@ -40,7 +40,9 @@
     "webpack-dev-server": "^3.11.3"
   },
   "dependencies": {
+    "chardet": "^1.4.0",
     "d3": "^5.16.0",
+    "iconv-lite": "^0.4.24",
     "umbrellajs": "^3.3.1"
   }
 }
