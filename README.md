@@ -37,37 +37,37 @@ You shall then open `index.html` in your browser.
 ## Progress
 
 - Global Header
-    - [v] TITLE:
-    - [v] SUBTITLE:
-    - [v] BPM:
-    - [v] WAVE:
-    - [v] OFFSET:
+    - [x] TITLE:
+    - [x] SUBTITLE:
+    - [x] BPM:
+    - [x] WAVE:
+    - [x] OFFSET:
     - [ ] SONGVOL:
     - [ ] SEVOL:
-    - [v] DEMOSTART:
+    - [x] DEMOSTART:
     - [ ] SCOREMODE:
-    - [v] GENRE:
+    - [x] GENRE:
     - [ ] SIDE:
     - [ ] STYLE:
 - Per-course Headers
     - COURSE:
-        - [v] Easy / 0
-        - [v] Normal / 1
-        - [v] Hard / 2
-        - [v] Oni / 3
+        - [x] Easy / 0
+        - [x] Normal / 1
+        - [x] Hard / 2
+        - [x] Oni / 3
         - [ ] Edit / 4
-    - [v] LEVEL:
-    - [v] BALLOON:
-    - [v] SCOREINIT:
-    - [v] SCOREDIFF:
+    - [x] LEVEL:
+    - [x] BALLOON:
+    - [x] SCOREINIT:
+    - [x] SCOREDIFF:
 - Command
-    - [?] #START
-    - [?] #END
-    - [v] #GOGOSTART
-    - [v] #GOGOEND
-    - [v] #MEASURE
-    - [v] #SCROLL
-    - [v] #BPMCHANGE
+    - [ ] #START
+    - [ ] #END
+    - [x] #GOGOSTART
+    - [x] #GOGOEND
+    - [x] #MEASURE
+    - [x] #SCROLL
+    - [x] #BPMCHANGE
     - [ ] #DELAY
     - [ ] #BRANCHSTART
     - [ ] #BRANCHEND

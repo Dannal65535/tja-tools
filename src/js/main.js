@@ -15,8 +15,8 @@ import '../css/Pixel-3x5.css';
 
 //==============================================================================
 
-const $editorLive = $('.editor-live'),
-      $editorProcess = $('.editor-process');
+const $editorLive = $('.editor-live');
+const $editorProcess = $('.editor-process');
 const $input = $('.area-editor .input');
 const $errors = $('.area-errors .errors');
 
@@ -25,236 +25,237 @@ let selectedDifficulty = '';
 let selectedPage = 'preview';
 
 function displayErrors(message) {
-  $errors.text(message);
+    $errors.text(message);
 }
 
 function updateUI() {
-  $('.controls-diff .button.is-active').removeClass('is-active');
-  $(`.controls-diff .btn-diff-${selectedDifficulty}`).addClass('is-active');
+    $('.controls-diff .button.is-active').removeClass('is-active');
+    $(`.controls-diff .btn-diff-${selectedDifficulty}`).addClass('is-active');
 
-  $('.controls-page .button.is-active').removeClass('is-active');
-  $(`.controls-page .btn-page-${selectedPage}`).addClass('is-active');
+    $('.controls-page .button.is-active').removeClass('is-active');
+    $(`.controls-page .btn-page-${selectedPage}`).addClass('is-active');
 
-  $('.area-pages .page').addClass('is-hidden');
-  $(`.area-pages .page-${selectedPage}`).removeClass('is-hidden');
+    $('.area-pages .page').addClass('is-hidden');
+    $(`.area-pages .page-${selectedPage}`).removeClass('is-hidden');
 
-  if (selectedPage === 'preview' && selectedDifficulty !== '') showPreview();
-  else hidePreview();
+    if (selectedPage === 'preview' && selectedDifficulty !== '') showPreview();
+    else hidePreview();
 
-  if (selectedPage === 'statistics') showStatistics();
+    if (selectedPage === 'statistics') showStatistics();
 }
 
 function processTJA() {
-  try {
-    tjaParsed = parseTJA($input.first().value);
+    try {
+        tjaParsed = parseTJA($input.first().value);
 
-    $('.controls-diff .button').addClass('is-hidden');
-    for (let diff in tjaParsed.courses)
-      $(`.controls-diff .btn-diff-${diff}`).removeClass('is-hidden');
+        $('.controls-diff .button').addClass('is-hidden');
+        for (let diff in tjaParsed.courses) {
+            $(`.controls-diff .btn-diff-${diff}`).removeClass('is-hidden');
+        }
 
-    displayErrors('No error');
-  } catch (e) {
-    console.error(e);
-    displayErrors(e.message);
-  }
+        displayErrors('No error');
+    } catch (e) {
+        console.error(e);
+        displayErrors(e.message);
+    }
 }
 
 function showPreview() {
-  if (selectedDifficulty === '') return;
+    if (selectedDifficulty === '') return;
 
-  $('#tja-preview').remove();
+    $('#tja-preview').remove();
 
-  document.fonts.load('5px "Pixel 3x5"').then(() => {
-    try {
-      const $canvas = drawChart(tjaParsed, selectedDifficulty);
-      $canvas.id = 'tja-preview';
-      $('.page-preview').append($canvas);
+    document.fonts.load('5px "Pixel 3x5"').then(() => {
+        try {
+            const $canvas = drawChart(tjaParsed, selectedDifficulty);
+            $canvas.id = 'tja-preview';
+            $('.page-preview').append($canvas);
 
-      displayErrors('No error');
-    } catch (e) {
-      console.error(e);
-      displayErrors(e.message);
-    }
-  });
+            displayErrors('No error');
+        } catch (e) {
+            console.error(e);
+            displayErrors(e.message);
+        }
+    });
 }
 
 function hidePreview() {
-  $('#tja-preview').remove();
+    $('#tja-preview').remove();
 }
 
 function showStatistics() {
-  if (selectedDifficulty === '') return;
+    if (selectedDifficulty === '') return;
 
-  try {
-    const data = analyseChart(tjaParsed, selectedDifficulty);
-    buildStatisticsPage(data);
-  } catch (e) {
-    console.error(e);
-    displayErrors(e.message);
-  }
+    try {
+        const data = analyseChart(tjaParsed, selectedDifficulty);
+        buildStatisticsPage(data);
+    } catch (e) {
+        console.error(e);
+        displayErrors(e.message);
+    }
 }
 
 function buildStatisticsPage(data) {
-  const { statistics: stats, graph } = data;
+    const { statistics: stats, graph } = data;
 
-  // Statistics
-  $('.stat-total-combo').text(stats.totalCombo);
+    // Statistics
+    $('.stat-total-combo').text(stats.totalCombo);
 
-  const course = tjaParsed.courses[selectedDifficulty];
-  const { scoreInit, scoreDiff } = course.headers;
-  
-  const drop1 = n => Math.floor(n / 10) * 10;
-  const multipliers = [0, 1, 2, 4, 8];
-  const noteScores = multipliers.map(m => drop1(scoreInit + scoreDiff * m));
-  const noteGogoScores = noteScores.map(s => drop1(s * 1.2));
-  const statPotential = (
-    noteScores.map((s, i) => stats.score.notes[0][i] * s).reduce((p, c) => p + c, 0) +
-    noteGogoScores.map((s, i) => stats.score.notes[1][i] * s).reduce((p, c) => p + c, 0) +
-    stats.score.balloon[0] * 300 +
-    stats.score.balloon[1] * 360 +
-    stats.score.balloonPop[0] * 5000 +
-    stats.score.balloonPop[1] * 6000 +
-    Math.floor(stats.totalCombo / 100) * 10000
-  );
+    const course = tjaParsed.courses[selectedDifficulty];
+    const { scoreInit, scoreDiff } = course.headers;
 
-  if (stats.rendas.length) $('.stat-max-score').text(`${statPotential}点 + 連打`);
-  else $('.stat-max-score').text(`${statPotential}点`);
+    const drop1 = n => Math.floor(n / 10) * 10;
+    const multipliers = [0, 1, 2, 4, 8];
+    const noteScores = multipliers.map(m => drop1(scoreInit + scoreDiff * m));
+    const noteGogoScores = noteScores.map(s => drop1(s * 1.2));
+    const statPotential = (
+        noteScores.map((s, i) => stats.score.notes[0][i] * s).reduce((p, c) => p + c, 0) +
+        noteGogoScores.map((s, i) => stats.score.notes[1][i] * s).reduce((p, c) => p + c, 0) +
+        stats.score.balloon[0] * 300 +
+        stats.score.balloon[1] * 360 +
+        stats.score.balloonPop[0] * 5000 +
+        stats.score.balloonPop[1] * 6000 +
+        Math.floor(stats.totalCombo / 100) * 10000
+    );
 
-  $('.stat-don-small').text(stats.notes[0]);
-  $('.stat-don-big').text(stats.notes[2]);
-  $('.stat-kat-small').text(stats.notes[1]);
-  $('.stat-kat-big').text(stats.notes[3]);
+    if (stats.rendas.length) $('.stat-max-score').text(`${statPotential}`);
+    else $('.stat-max-score').text(`${statPotential} Points`);
 
-  const statDon = stats.notes[0] + stats.notes[2];
-  const statKat = stats.notes[1] + stats.notes[3];
-  $('.stat-don').text(statDon);
-  $('.stat-kat').text(statKat);
+    $('.stat-don-small').text(stats.notes[0]);
+    $('.stat-don-big').text(stats.notes[2]);
+    $('.stat-kat-small').text(stats.notes[1]);
+    $('.stat-kat-big').text(stats.notes[3]);
 
-  const statDonRatio = (statDon / stats.totalCombo) * 100;
-  const statKatRatio = 100 - statDonRatio;
-  $('.stat-don-ratio').text(statDonRatio.toFixed(2) + '%');
-  $('.stat-kat-ratio').text(statKatRatio.toFixed(2) + '%');
+    const statDon = stats.notes[0] + stats.notes[2];
+    const statKat = stats.notes[1] + stats.notes[3];
+    $('.stat-don').text(statDon);
+    $('.stat-kat').text(statKat);
 
-  $('.stat-density').text((stats.totalCombo / stats.length).toFixed(3));
-  $('.stat-length').text(stats.length.toFixed(2));
+    const statDonRatio = (statDon / stats.totalCombo) * 100;
+    const statKatRatio = 100 - statDonRatio;
+    $('.stat-don-ratio').text(statDonRatio.toFixed(2) + '%');
+    $('.stat-kat-ratio').text(statKatRatio.toFixed(2) + '%');
 
-  $('.stat-renda').text(stats.rendas.map(r => r.toFixed(3) + '秒').join(' + '));
-  $('.stat-renda-total').text(stats.rendas.reduce((a, b) => a + b, 0).toFixed(3));
+    $('.stat-density').text((stats.totalCombo / stats.length).toFixed(3));
+    $('.stat-length').text(stats.length.toFixed(2));
 
-  $('.stat-balloon').html(stats.balloons.map(b => (
-    `${b[0].toFixed(3)}秒 / ${b[1]}打 (${(b[1] / b[0]).toFixed(3)}打/秒)`
-  )).join('<br>'));
+    $('.stat-renda').text(stats.rendas.map(r => r.toFixed(3) + 's').join(' + '));
+    $('.stat-renda-total').text(stats.rendas.reduce((a, b) => a + b, 0).toFixed(3) + 's');
 
-  // Graph
-  const graphWidth = 600, graphHeight = 200;
-  const x = d3.scaleBand().rangeRound([ 0, graphWidth ]),
-        y = d3.scaleLinear().rangeRound([ graphHeight, 0 ]);
-  const yMax = Math.ceil(graph.max / 5) * 5,
-        yTickValues = [...Array(yMax / 5 + 1).keys()].map(i => i * 5);
+    $('.stat-balloon').html(stats.balloons.map(b => (
+        `${b[1]}hit(s) / ${b[0].toFixed(3)}s = ${(b[1] / b[0]).toFixed(3)} hit/s`
+    )).join('<br>'));
 
-  $('.stat-graph').empty();
-  const graphSvg = d3
-    .select('.stat-graph')
-      .attr('width', graphWidth + 50).attr('height', graphHeight + 40)
-    .append('g')
-      .attr('transform', 'translate(30, 20)');
+    // Graph
+    const graphWidth = 600, graphHeight = 200;
+    const x = d3.scaleBand().rangeRound([0, graphWidth]);
+    const y = d3.scaleLinear().rangeRound([graphHeight, 0]);
+    const yMax = Math.ceil(graph.max / 5) * 5;
+    const yTickValues = [...Array(yMax / 5 + 1).keys()].map(i => i * 5);
 
-  const layers = d3.stack().keys(['don', 'kat'])(graph.data);
+    $('.stat-graph').empty();
+    const graphSvg = d3
+        .select('.stat-graph')
+        .attr('width', graphWidth + 50).attr('height', graphHeight + 40)
+        .append('g')
+        .attr('transform', 'translate(30, 20)');
 
-  x.domain(layers[0].map((d, idx) => idx));
-  y.domain([0, Math.ceil(graph.max / 5) * 5]);
+    const layers = d3.stack().keys(['don', 'kat'])(graph.data);
 
-  const makeAxisY = () => d3.axisLeft(y).ticks(5).tickValues(yTickValues);
+    x.domain(layers[0].map((d, idx) => idx));
+    y.domain([0, Math.ceil(graph.max / 5) * 5]);
 
-  graphSvg.append('g')
-    .attr('class', 'grid')
-    .call(makeAxisY().tickSize(-graphWidth).tickFormat(''));
+    const makeAxisY = () => d3.axisLeft(y).ticks(5).tickValues(yTickValues);
 
-  const layer = graphSvg
-    .selectAll('.layer')
-      .data(layers)
-    .enter().append('g')
-      .attr('class', 'layer')
-      .style('fill', (d, i) => ['#f44e', '#44fe'][i]);
+    graphSvg.append('g')
+        .attr('class', 'grid')
+        .call(makeAxisY().tickSize(-graphWidth).tickFormat(''));
 
-  layer
-    .selectAll('rect')
-      .data(d => d)
-    .enter().append('rect')
-      .attr('x', (d, idx) => x(idx))
-      .attr('y', d => y(d[1]))
-      .attr('height', d => y(d[0]) - y(d[1]))
-      .attr('width', x.bandwidth);
+    const layer = graphSvg
+        .selectAll('.layer')
+        .data(layers)
+        .enter().append('g')
+        .attr('class', 'layer')
+        .style('fill', (d, i) => ['#f44e', '#44fe'][i]);
 
-  graphSvg.append('g')
-    .attr('class', 'axis-y')
-    .call(makeAxisY());
+    layer
+        .selectAll('rect')
+        .data(d => d)
+        .enter().append('rect')
+        .attr('x', (d, idx) => x(idx))
+        .attr('y', d => y(d[1]))
+        .attr('height', d => y(d[0]) - y(d[1]))
+        .attr('width', x.bandwidth);
+
+    graphSvg.append('g')
+        .attr('class', 'axis-y')
+        .call(makeAxisY());
 }
 
 //==============================================================================
 
 $editorProcess.on('click', () => {
-  processTJA();
-  showPreview();
+    processTJA();
+    showPreview();
 });
 
 $input.on('input', () => {
-  if ($editorLive.first().checked) {
-    processTJA();
-    updateUI();
-  }
+    if ($editorLive.first().checked) {
+        processTJA();
+        updateUI();
+    }
 });
 
 $input.on('dragover', e => {
-  e.stopPropagation();
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'cppy';
+    e.stopPropagation();
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'cppy';
 });
 
 $input.on('drop', dropEvt => {
-  dropEvt.stopPropagation();
-  dropEvt.preventDefault();
+    dropEvt.stopPropagation();
+    dropEvt.preventDefault();
 
-  const file = dropEvt.dataTransfer.files[0];
+    const file = dropEvt.dataTransfer.files[0];
 
-  const reader = new FileReader();
+    const reader = new FileReader();
 
-  reader.onload = readerEvt => {
-    const arrayBuffer = readerEvt.target.result;
-    const uintArray = new Uint8Array(arrayBuffer);
-    const buffer = Buffer.from(uintArray);
+    reader.onload = readerEvt => {
+        const arrayBuffer = readerEvt.target.result;
+        const uintArray = new Uint8Array(arrayBuffer);
+        const buffer = Buffer.from(uintArray);
 
-    const encoding = chardet.detect(buffer);
-    const content = iconv.decode(buffer, encoding);
+        const encoding = chardet.detect(buffer);
+        const content = iconv.decode(buffer, encoding);
 
-    $input.first().value = content;
-    selectedDifficulty = '';
+        $input.first().value = content;
+        selectedDifficulty = '';
 
-    processTJA();
-    updateUI();
-  };
+        processTJA();
+        updateUI();
+    };
 
-  reader.readAsArrayBuffer(file);
+    reader.readAsArrayBuffer(file);
 });
 
 $('.controls-diff .button').on('click', evt => {
-  const diff = $(evt.target).data('value');
+    const diff = $(evt.target).data('value');
 
-  selectedDifficulty = diff;
-  updateUI();
+    selectedDifficulty = diff;
+    updateUI();
 });
 
 $('.controls-page .button').on('click', evt => {
-  const page = $(evt.target).data('value');
+    const page = $(evt.target).data('value');
 
-  selectedPage = page;
-  updateUI();
+    selectedPage = page;
+    updateUI();
 });
 
 //==============================================================================
 
 if ($input.first().value) {
-  processTJA();
+    processTJA();
 }
 
 updateUI();

@@ -1,184 +1,203 @@
 /***** Reset *****/
 
 html {
-  box-sizing: border-box;
-  font-size: 16px;
+    box-sizing: border-box;
+    font-size: 16px;
 }
 
-*, *:before, *:after {
-  box-sizing: inherit;
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
 }
 
-body, h1, h2, h3, h4, h5, h6, p, ol, ul {
-  margin: 0;
-  padding: 0;
-  font-weight: normal;
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ol,
+ul {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
 }
 
 /***** Global *****/
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
-  display: flex;
-  flex-direction: row;
-  font-family: sans-serif;
+    display: flex;
+    flex-direction: row;
+    font-family: sans-serif;
 }
 
-.is-hidden { display: none; }
+.is-hidden {
+    display: none;
+}
 
-.is-color-don { color: #f44; }
-.is-color-kat { color: #44f; }
+.is-color-don {
+    color: #f44;
+}
+
+.is-color-kat {
+    color: #44f;
+}
 
 /***** Elements *****/
 
 .pane-left,
 .pane-right {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .area {
-  margin: 8px;
-  padding: 8px;
-  border: 1px solid #ccc;
+    margin: 8px;
+    padding: 8px;
+    border: 1px solid #ccc;
 
-  & + .area {
-    margin-top: 0;
-  }
-
-  &.is-titled {
-    display: flex;
-    flex-direction: column;
-
-    .title {
-      margin-bottom: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      text-transform: uppercase;
+    &+.area {
+        margin-top: 0;
     }
 
-    .content {
-      flex: 1;
+    &.is-titled {
+        display: flex;
+        flex-direction: column;
+
+        .title {
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .content {
+            flex: 1;
+        }
     }
-  }
 }
 
 .pane-right .area {
-  margin-left: 0;
+    margin-left: 0;
 }
 
 /***** Left *****/
 
 .pane-left {
-  flex: 4;
+    flex: 4;
 }
 
 .area-editor {
-  flex: 1;
+    flex: 1;
 
-  .controls {
-    margin-bottom: 8px;
-    font-size: 12px;
-  }
+    .controls {
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
 
-  .input {
-    padding: 8px;
-    width: 100%;
-    height: 100%;
-    font-family: monospace;
-    resize: none;
-  }
+    .input {
+        padding: 8px;
+        width: 100%;
+        height: 100%;
+        font-family: monospace;
+        resize: none;
+    }
 }
 
 .area-errors {
-  .errors {
-    padding: 8px;
-    max-height: 72px;
-    background-color: #eee;
-    font-size: 12px;
-    overflow-y: auto;
-  }
+    .errors {
+        padding: 8px;
+        max-height: 72px;
+        background-color: #eee;
+        font-size: 12px;
+        overflow-y: auto;
+    }
 }
 
 /***** Right *****/
 
 .pane-right {
-  flex: 6;
+    flex: 6;
 }
 
 .area-controls {
-  .button {
-    padding: 2px 4px;
-    background: #fafafa;
-    border: 1px solid #aaa;
-    font-size: 14px;
-    cursor: pointer;
+    .button {
+        padding: 2px 4px;
+        background: #fafafa;
+        border: 1px solid #aaa;
+        font-size: 14px;
+        cursor: pointer;
 
-    &:hover {
-      background: #f6f6f6;
-    }
+        &:hover {
+            background: #f6f6f6;
+        }
 
-    &.is-active {
-      font-weight: bold;
-      background: #eee;
+        &.is-active {
+            font-weight: bold;
+            background: #eee;
+        }
     }
-  }
 }
 
 .area-pages {
-  flex: 1;
-  overflow-y: auto;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .page-preview,
 .page-statistics {
-  width: 100%;
-  max-height: 100%;
+    width: 100%;
+    max-height: 100%;
 }
 
 .page-preview {
-  text-align: center;
+    text-align: center;
 }
 
 .page-statistics {
-  h3 {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-
-  h4 {
-    margin-top: 1rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-
-  p {
-    font-size: 1rem;
-    line-height: 1.4rem;
-  }
-
-  code {
-    display: inline-block;
-    padding: 2px 4px;
-    font-size: 1rem;
-    background: #f7f7f7;
-    border: 1px solid #eeeeee;
-    border-radius: 3px;
-  }
-
-  .stat-graph {
-    background: #fafafa;
-    border: 1px solid #f6f6f6;
-
-    .grid line {
-      stroke: #777;
+    h3 {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        font-weight: bold;
     }
-  }
+
+    h4 {
+        margin-top: 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 1rem;
+        line-height: 1.4rem;
+    }
+
+    code {
+        display: inline-block;
+        padding: 2px 4px;
+        font-size: 1rem;
+        background: #f7f7f7;
+        border: 1px solid #eeeeee;
+        border-radius: 3px;
+    }
+
+    .stat-graph {
+        background: #fafafa;
+        border: 1px solid #f6f6f6;
+
+        .grid line {
+            stroke: #777;
+        }
+    }
 }
