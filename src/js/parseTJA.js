@@ -116,9 +116,9 @@ function getCourse(tjaHeaders, lines) {
     // Process lines
     let measureDividend = 4, measureDivisor = 4;
     let measureProperties = {}, measureData = '', measureEvents = [];
-    let current_branch = 'N';
-    let target_branch = 'N';
-    let flag_levelhold = false;
+    let currentBranch = 'N';
+    let targetBranch = 'N';
+    let flagLevelhold = false;
 
     for (const line of lines) {
         if (line.type === 'header') {
@@ -154,52 +154,52 @@ function getCourse(tjaHeaders, lines) {
         else if (line.type === 'command') {
             switch (line.name) {
                 case 'BRANCHSTART':
-                    if (flag_levelhold) {
+                    if (flagLevelhold) {
                         break;
                     }
                     let values = line.value.split(',');
                     if (values[0] === 'r') {
-                        if (values.length >= 3) target_branch = 'M';
-                        else if (values.length === 2) target_branch = 'E';
-                        else target_branch = 'N';
+                        if (values.length >= 3) targetBranch = 'M';
+                        else if (values.length === 2) targetBranch = 'E';
+                        else targetBranch = 'N';
                     }
                     else if (values[0] === 'p') {
-                        if (values.length >= 3 && parseFloat(values[2]) <= 100) target_branch = 'M';
-                        else if (values.length >= 2 && parseFloat(values[1]) <= 100) target_branch = 'E';
-                        else target_branch = 'N';
+                        if (values.length >= 3 && parseFloat(values[2]) <= 100) targetBranch = 'M';
+                        else if (values.length >= 2 && parseFloat(values[1]) <= 100) targetBranch = 'E';
+                        else targetBranch = 'N';
                     }
                     break;
 
                 case 'BRANCHEND':
-                    current_branch = target_branch;
+                    currentBranch = targetBranch;
                     break;
 
                 case 'N':
-                    current_branch = 'N';
+                    currentBranch = 'N';
                     break;
 
                 case 'E':
-                    current_branch = 'E';
+                    currentBranch = 'E';
                     break;
 
                 case 'M':
-                    current_branch = 'M';
+                    currentBranch = 'M';
                     break;
 
                 case 'START':
-                    current_branch = 'N';
-                    target_branch = 'N';
-                    flag_levelhold = false;
+                    currentBranch = 'N';
+                    targetBranch = 'N';
+                    flagLevelhold = false;
                     break;
 
                 case 'END':
-                    current_branch = 'N';
-                    target_branch = 'N';
-                    flag_levelhold = false;
+                    currentBranch = 'N';
+                    targetBranch = 'N';
+                    flagLevelhold = false;
                     break;
 
                 default:
-                    if (current_branch != target_branch) {
+                    if (currentBranch != targetBranch) {
                         break;
                     }
                     switch (line.name) {
@@ -246,11 +246,11 @@ function getCourse(tjaHeaders, lines) {
                             break;
                         
                         case 'LEVELHOLD':
-                            flag_levelhold = true;
+                            flagLevelhold = true;
                     }
             }
         }
-        else if (line.type === 'data' && current_branch === target_branch) {
+        else if (line.type === 'data' && currentBranch === targetBranch) {
             let data = line.data;
 
             if (data.endsWith(',')) {
