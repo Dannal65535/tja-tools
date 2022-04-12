@@ -6,7 +6,11 @@
 
 ## 运行
 
-下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html)并用浏览器打开。
+访问[https://whmhammer.github.io/tja-tools](https://whmhammer.github.io/tja-tools)
+
+**或**
+
+下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html)并用浏览器打开
 
 ## 构建
 

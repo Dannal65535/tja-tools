@@ -6,7 +6,11 @@ A tool to visualize the `.tja` chart files. Forked from [Snack](https://github.c
 
 ## Run
 
-Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html), and open it in your browser.
+Visit [https://whmhammer.github.io/tja-tools](https://whmhammer.github.io/tja-tools)
+
+**OR**
+
+Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html), and open it in your browser
 
 ## Build
 
