@@ -118,6 +118,7 @@ function getCourse(tjaHeaders, lines) {
     let measureProperties = {}, measureData = '', measureEvents = [];
     let current_branch = 'N';
     let target_branch = 'N';
+    let flag_levelhold = false;
 
     for (const line of lines) {
         if (line.type === 'header') {
@@ -153,6 +154,9 @@ function getCourse(tjaHeaders, lines) {
         else if (line.type === 'command') {
             switch (line.name) {
                 case 'BRANCHSTART':
+                    if (flag_levelhold) {
+                        break;
+                    }
                     let values = line.value.split(',');
                     if (values[0] === 'r') {
                         if (values.length >= 3) target_branch = 'M';
@@ -185,11 +189,13 @@ function getCourse(tjaHeaders, lines) {
                 case 'START':
                     current_branch = 'N';
                     target_branch = 'N';
+                    flag_levelhold = false;
                     break;
 
                 case 'END':
                     current_branch = 'N';
                     target_branch = 'N';
+                    flag_levelhold = false;
                     break;
 
                 default:
@@ -238,6 +244,9 @@ function getCourse(tjaHeaders, lines) {
                         case 'TTBREAK':
                             measureProperties['ttBreak'] = true;
                             break;
+                        
+                        case 'LEVELHOLD':
+                            flag_levelhold = true;
                     }
             }
         }

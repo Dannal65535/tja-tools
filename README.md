@@ -10,7 +10,7 @@
 
 **或**
 
-下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html)并用浏览器打开
+下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.2/tja-tools.html)并用浏览器打开
 
 ## 构建
 
@@ -87,11 +87,18 @@ npm run build
     - [x] #N
     - [x] #E
     - [x] #M
-    - [ ] #LEVELHOLD
+    - [x] #LEVELHOLD
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
 
 ## 版本历史
+
+<details>
+    <summary>v2.1.2</summary>
+    <ul>
+        <li>完整的谱面分歧支持</li>
+    </ul>
+</details>
 
 <details>
     <summary>v2.1.1</summary>

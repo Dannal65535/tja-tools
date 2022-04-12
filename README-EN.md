@@ -10,7 +10,7 @@ Visit [https://whmhammer.github.io/tja-tools](https://whmhammer.github.io/tja-to
 
 **OR**
 
-Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.1/tja-tools.html), and open it in your browser
+Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.2/tja-tools.html), and open it in your browser
 
 ## Build
 
@@ -87,11 +87,18 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
     - [x] #N
     - [x] #E
     - [x] #M
-    - [ ] #LEVELHOLD
+    - [x] #LEVELHOLD
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
 
 ## Version History
+
+<details>
+    <summary>v2.1.2</summary>
+    <ul>
+        <li>Complete branching support</li>
+    </ul>
+</details>
 
 <details>
     <summary>v2.1.1</summary>
