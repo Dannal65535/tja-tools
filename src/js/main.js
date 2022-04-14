@@ -15,6 +15,9 @@ import '../css/Pixel-3x5.css';
 
 //==============================================================================
 
+const $charsetUtf8 = $('#charset-utf-8').first();
+const $charsetShiftjis = $('#charset-shift-jis').first();
+const $charsetGb18030 = $('#charset-gb18030').first();
 const $editorLive = $('.editor-live');
 const $editorProcess = $('.editor-process');
 const $input = $('.area-editor .input');
@@ -225,7 +228,16 @@ $input.on('drop', dropEvt => {
         const uintArray = new Uint8Array(arrayBuffer);
         const buffer = Buffer.from(uintArray);
 
-        const encoding = chardet.detect(buffer);
+        let encoding;
+        if ($charsetUtf8.checked) {
+            encoding = 'UTF-8';
+        } else if ($charsetShiftjis.checked) {
+            encoding = 'Shift-JIS';
+        } else if ($charsetGb18030.checked) {
+            encoding = 'GB18030';
+        } else {
+            encoding = chardet.detect(buffer);
+        }
         const content = iconv.decode(buffer, encoding);
 
         $input.first().value = content;

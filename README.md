@@ -10,7 +10,7 @@
 
 **或**
 
-下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.2/tja-tools.html)并用浏览器打开
+下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.3/tja-tools.html)并用浏览器打开
 
 ## 构建
 
@@ -52,6 +52,8 @@ npm run build
 
 ## 进度
 
+- [x] 自选文件编码
+- [ ] 并列显示不同分歧轨道
 - 全局元信息
     - [x] TITLE:
     - [x] SUBTITLE:
@@ -92,6 +94,13 @@ npm run build
     - [ ] #BARLINEON
 
 ## 版本历史
+
+<details>
+    <summary>v2.1.3</summary>
+    <ul>
+        <li>添加了自选文件编码功能</li>
+    </ul>
+</details>
 
 <details>
     <summary>v2.1.2</summary>

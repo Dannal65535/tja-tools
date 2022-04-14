@@ -132,9 +132,14 @@ body {
         font-weight: bold;
         text-transform: uppercase;
 
-        svg {
+        img {
             height: 16px;
             width: 16px;
+            vertical-align: middle;
+        }
+
+        label {
+            vertical-align: middle;
         }
     }
 }

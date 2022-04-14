@@ -1,6 +1,6 @@
 # TJA Tools
 
-A tool to visualize the `.tja` chart files. Forked from [Snack](https://github.com/Snack-X)'s [tja-tools](https://github.com/Snack-X/tja-tools).
+A tool to visualize `.tja` chart files. Forked from [Snack](https://github.com/Snack-X)'s [tja-tools](https://github.com/Snack-X/tja-tools).
 
 [中文README](README.md)
 
@@ -10,7 +10,7 @@ Visit [https://whmhammer.github.io/tja-tools](https://whmhammer.github.io/tja-to
 
 **OR**
 
-Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.2/tja-tools.html), and open it in your browser
+Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.3/tja-tools.html), and open it in your browser
 
 ## Build
 
@@ -52,6 +52,8 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
 
 ## Progress
 
+- [x] Manual Selection of file encoding
+- [ ] Show different branches side-by-side
 - Global Header
     - [x] TITLE:
     - [x] SUBTITLE:
@@ -92,6 +94,13 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
     - [ ] #BARLINEON
 
 ## Version History
+
+<details>
+    <summary>v2.1.3</summary>
+    <ul>
+        <li>Added manual file encoding selection</li>
+    </ul>
+</details>
 
 <details>
     <summary>v2.1.2</summary>
