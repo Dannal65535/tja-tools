@@ -18,7 +18,8 @@ import '../css/Pixel-3x5.css';
 const $charsetUtf8 = $('#charset-utf-8').first();
 const $charsetShiftjis = $('#charset-shift-jis').first();
 const $charsetGb18030 = $('#charset-gb18030').first();
-const $editorLive = $('.editor-live');
+const $editorLive = $('#editor-live').first();
+const $autoScrollToBottom = $('#auto-scroll-to-bottom').first();
 const $editorProcess = $('.editor-process');
 const $input = $('.area-editor .input');
 const $errors = $('.area-errors .errors');
@@ -203,9 +204,16 @@ $editorProcess.on('click', () => {
 });
 
 $input.on('input', () => {
-    if ($editorLive.first().checked) {
+    if ($editorLive.checked) {
         processTJA();
         updateUI();
+
+        if ($autoScrollToBottom.checked) {
+            setTimeout(() => {
+                let area_pages = document.getElementById('area-pages');
+                area_pages.scrollTo(0, area_pages.scrollHeight);
+            }, 100);
+        }
     }
 });
 

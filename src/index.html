@@ -10,11 +10,13 @@
                 <h2 class="title">Editor (Drag and drop .tja file)</h2>
                 <div class="controls">
                     <div style="float:left">
+                        <label>Encoding: </label>
                         <label><input id="charset-auto" type="radio" name="charset" checked>Auto</label>
                         <label><input id="charset-utf-8" type="radio" name="charset">UTF-8</label>
                         <label><input id="charset-shift-jis" type="radio" name="charset">Shift-JIS</label>
                         <label><input id="charset-gb18030" type="radio" name="charset">GB18030</label>
-                        <label><input class="editor-live" type="checkbox" checked> Enable live-editing</label>
+                        <label><input id="editor-live" type="checkbox" checked>Enable live-editing</label>
+                        <label><input id="auto-scroll-to-bottom" type="checkbox">Auto scroll-to-bottom</label>
                     </div>
                     <div style="float:right">
                         <button class="editor-process">Process</button>
@@ -51,7 +53,7 @@
                     <span class="button btn-page-statistics" data-value='statistics'>Statistics</span>
                 </div>
             </div>
-            <div class="area area-pages">
+            <div id="area-pages" class="area area-pages">
                 <div class="page page-preview"></div>
                 <div class="page page-statistics">
                     <h3>Statistics</h3>

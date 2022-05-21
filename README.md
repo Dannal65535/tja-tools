@@ -1,16 +1,12 @@
 # TJA工具
 
-将`.tja`文件转化为图片。由[Snack](https://github.com/Snack-X)的[tja-tools](https://github.com/Snack-X/tja-tools)分叉。
+中文 [English](README-EN.md)
 
-[English README](README-EN.md)
+将`.tja`文件转化为图片。由[Snack](https://github.com/Snack-X)的[tja-tools](https://github.com/Snack-X/tja-tools)分叉。
 
 ## 运行
 
 访问[https://whmhammer.github.io/tja-tools](https://whmhammer.github.io/tja-tools)
-
-**或**
-
-下载[tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.3/tja-tools.html)并用浏览器打开
 
 ## 构建
 
@@ -92,49 +88,3 @@ npm run build
     - [x] #LEVELHOLD
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
-
-## 版本历史
-
-<details>
-    <summary>v2.1.3</summary>
-    <ul>
-        <li>添加了自选文件编码功能</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v2.1.2</summary>
-    <ul>
-        <li>完整的谱面分歧支持</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v2.1.1</summary>
-    <ul>
-        <li>更完整的谱面分歧支持（现在可正确解析如《杏之歌》的谱面，但尚不支持<code>#LEVELHOLD</code>）</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v2.1.0</summary>
-    <ul>
-        <li>初步谱面分歧支持</li>
-        注：目前硬编码为解析<code>#M</code>（达人）分支。适用于大部分谱面（反例：《杏之歌》）
-    </ul>
-</details>
-
-<details>
-    <summary>v2.0.x</summary>
-    <ul>
-        <li>现可解析里魔王谱面</li>
-        <li>完善了文档</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v1.x</summary>
-    <ul>
-        <li><a href="https://github.com/Snack-X" target="_blank">Snack</a>原本的<a href="https://github.com/Snack-X/tja-tools" target="_blank">tja-tools</a></li>
-    </ul>
-</details>

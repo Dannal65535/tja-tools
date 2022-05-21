@@ -1,16 +1,12 @@
 # TJA Tools
 
-A tool to visualize `.tja` chart files. Forked from [Snack](https://github.com/Snack-X)'s [tja-tools](https://github.com/Snack-X/tja-tools).
+[中文](README.md) English
 
-[中文README](README.md)
+A tool to visualize `.tja` chart files. Forked from [Snack](https://github.com/Snack-X)'s [tja-tools](https://github.com/Snack-X/tja-tools).
 
 ## Run
 
 Visit [https://whmhammer.github.io/tja-tools](https://whmhammer.github.io/tja-tools)
-
-**OR**
-
-Download [tja-tools.html](https://github.com/WHMHammer/tja-tools/releases/download/v2.1.3/tja-tools.html), and open it in your browser
 
 ## Build
 
@@ -92,49 +88,3 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
     - [x] #LEVELHOLD
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
-
-## Version History
-
-<details>
-    <summary>v2.1.3</summary>
-    <ul>
-        <li>Added manual file encoding selection</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v2.1.2</summary>
-    <ul>
-        <li>Complete branching support</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v2.1.1</summary>
-    <ul>
-        <li>More complete branching support (now works with songs like Anzu no Uta, but still leave </code>#LEVELHOLD</code> unsupported)</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v2.1.0</summary>
-    <ul>
-        <li>Rough branching support</li>
-        Note: hard-coded to take the <code>#M</code> (master) branch. Works for most charts (counterexample: <em>Anzu no Uta</em>)
-    </ul>
-</details>
-
-<details>
-    <summary>v2.0.x</summary>
-    <ul>
-        <li>Now supports Edit/Ura courses</li>
-        <li>Added documentation</li>
-    </ul>
-</details>
-
-<details>
-    <summary>v1.x</summary>
-    <ul>
-        <li><a href="https://github.com/Snack-X" target="_blank">Snack</a>'s original <a href="https://github.com/Snack-X/tja-tools" target="_blank">tja-tools</a></li>
-    </ul>
-</details>
