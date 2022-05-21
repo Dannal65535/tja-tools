@@ -245,7 +245,7 @@ export default function (chart, courseId) {
                     const event = measure.events[i];
                     const eBeat = beat + (mBeat / (measure.data.length || 1) * event.position);
 
-                    if (event.name === 'gogoStart') {
+                    if (event.name === 'gogoStart' && !gogoStart) {
                         gogoStart = [ridx, eBeat];
                     }
                     else if (event.name === 'gogoEnd') {
