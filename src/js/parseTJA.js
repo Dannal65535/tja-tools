@@ -85,7 +85,7 @@ function parseLine(line) {
         }
     }
     // data
-    else if (match = line.match(/^([0-9]*,?)$/)) {
+    else if (match = line.match(/^(([0-9]|A|B|C|F|G)*,?)$/)) {
         const data = match[1];
 
         return {
@@ -244,7 +244,7 @@ function getCourse(tjaHeaders, lines) {
                         case 'TTBREAK':
                             measureProperties['ttBreak'] = true;
                             break;
-                        
+
                         case 'LEVELHOLD':
                             flagLevelhold = true;
                     }

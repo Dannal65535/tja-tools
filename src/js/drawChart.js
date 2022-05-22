@@ -358,8 +358,6 @@ export default function (chart, courseId) {
                     const note = measure.data.charAt(didx);
                     const nBeat = measure.rowBeat + (mBeat / measure.data.length * didx);
 
-                    // imo
-
                     if (note !== '0' && note !== '9' && imo) {
                         const border = imo[0];
                         const start = imo[imo.length - 1];
@@ -381,10 +379,12 @@ export default function (chart, courseId) {
                             break;
 
                         case '3':
+                        case 'A':
                             drawBigNote(ctx, ridx, nBeat, '#f33');
                             break;
 
                         case '4':
+                        case 'B':
                             drawBigNote(ctx, ridx, nBeat, '#5cf');
                             break;
 
@@ -413,6 +413,18 @@ export default function (chart, courseId) {
                         case '9':
                             if (!imo) imo = [];
                             imo.push([ridx, nBeat]);
+                            break;
+
+                        case 'C':
+                            drawSmallNote(ctx, ridx, nBeat, '#000');
+                            break;
+
+                        case 'F':
+                            drawSmallNote(ctx, ridx, nBeat, '#ddd');
+                            break;
+
+                        case 'G':
+                            drawBigNote(ctx, ridx, nBeat, '#f3f');
                             break;
                     }
                 }
