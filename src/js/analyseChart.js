@@ -83,10 +83,12 @@ function convertToTimed(course) {
                     break;
 
                 case '3':
+                case 'A':
                     note.type = 'donBig';
                     break;
 
                 case '4':
+                case 'B':
                     note.type = 'katBig';
                     break;
 
@@ -108,7 +110,7 @@ function convertToTimed(course) {
                     if (imo) imo = false;
                     break;
 
-                case '9': // imo
+                case '9':
                     if (imo === false) {
                         note.type = 'balloon';
                         note.count = course.headers.balloon[balloon++];
