@@ -1,12 +1,15 @@
 {
   "presets": [
     [
-      "@babel/preset-env", {
+      "@babel/preset-env",
+      {
         "targets": {
-          "browsers": ["since 2018-01"],
-        },
+          "browsers": [
+            "since 2018-01"
+          ]
+        }
       }
-    ],
+    ]
   ],
   "plugins": [
     "@babel/plugin-transform-runtime"

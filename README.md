@@ -71,6 +71,22 @@ npm run build
     - [x] BALLOON:
     - [x] SCOREINIT:
     - [x] SCOREDIFF:
+- 音符
+    - [x] 0（空）
+    - [x] 1（小咚）
+    - [x] 2（小咔）
+    - [x] 3（大咚）
+    - [x] 4（大咔）
+    - [x] 5（小滚奏开始）
+    - [x] 6（大滚奏开始）
+    - [x] 7（小气球开始）
+    - [x] 8（滚奏/气球结束）
+    - [x] 9（大气球开始）
+    - [x] A（双人咚）
+    - [x] B（双人咔）
+    - [x] C（炸弹）
+    - [x] F（隐藏音符）
+    - [x] G（紫/绿音符）
 - 指令
     - [x] #START
     - [x] #END
@@ -88,3 +104,8 @@ npm run build
     - [x] #LEVELHOLD
     - [ ] #BARLINEOFF
     - [ ] #BARLINEON
+
+# 致谢
+
+- [Snack](https://github.com/Snack-X)：项目的原作者
+- [申しコミ](https://github.com/0auBSQ)：添加了对`A`、`B`、`C`、`F`、`G`音符的支持

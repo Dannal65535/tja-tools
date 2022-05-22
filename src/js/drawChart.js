@@ -354,8 +354,6 @@ export default function (chart, courseId) {
             for (let midx = measures.length - 1; midx >= 0; midx--) {
                 const measure = measures[midx], mBeat = measure.length[0] / measure.length[1] * 4;
 
-								console.log(measure.data);
-
                 for (let didx = measure.data.length; didx >= 0; didx--) {
                     const note = measure.data.charAt(didx);
                     const nBeat = measure.rowBeat + (mBeat / measure.data.length * didx);
@@ -381,12 +379,12 @@ export default function (chart, courseId) {
                             break;
 
                         case '3':
-												case 'A':
+                        case 'A':
                             drawBigNote(ctx, ridx, nBeat, '#f33');
                             break;
 
                         case '4':
-												case 'B':
+                        case 'B':
                             drawBigNote(ctx, ridx, nBeat, '#5cf');
                             break;
 
@@ -417,17 +415,17 @@ export default function (chart, courseId) {
                             imo.push([ridx, nBeat]);
                             break;
 
-												case 'C':
-		                        drawSmallNote(ctx, ridx, nBeat, '#000');
-		                        break;
+                        case 'C':
+                            drawSmallNote(ctx, ridx, nBeat, '#000');
+                            break;
 
-												case 'F':
-				                    drawSmallNote(ctx, ridx, nBeat, '#ddd');
-				                    break;
+                        case 'F':
+                            drawSmallNote(ctx, ridx, nBeat, '#ddd');
+                            break;
 
-												case 'G':
-				                    drawBigNote(ctx, ridx, nBeat, '#f3f');
-				                    break;
+                        case 'G':
+                            drawBigNote(ctx, ridx, nBeat, '#f3f');
+                            break;
                     }
                 }
             }
