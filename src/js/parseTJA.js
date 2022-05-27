@@ -320,7 +320,22 @@ function getCourse(tjaHeaders, lines) {
             break;
     }
 
+    if (measureData) {
+        measures.push({
+            length: [measureDividend, measureDivisor],
+            properties: measureProperties,
+            data: measureData,
+            events: measureEvents,
+        });
+    } else {
+        for (let event of measureEvents) {
+            event.position = measures[measures.length - 1].data.length
+            measures[measures.length - 1].events.push(event)
+        }
+    }
+
     // Output
+    console.log(measures[measures.length - 1])
     return { course, headers, measures };
 }
 

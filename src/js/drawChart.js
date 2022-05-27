@@ -248,7 +248,7 @@ export default function (chart, courseId) {
                     if (event.name === 'gogoStart' && !gogoStart) {
                         gogoStart = [ridx, eBeat];
                     }
-                    else if (event.name === 'gogoEnd') {
+                    else if (event.name === 'gogoEnd' && gogoStart) {
                         drawLong(ctx, rows, gogoStart[0], gogoStart[1], ridx, eBeat, '#fbb', 'gogo');
                         gogoStart = false;
                     }
