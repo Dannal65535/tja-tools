@@ -42,6 +42,8 @@ npm run build
 
 ## 示例
 
+![](示例.png)
+
 ![](示例-春节序曲-谱面.png)
 
 ![](示例-春节序曲-统计.png)
@@ -50,61 +52,58 @@ npm run build
 
 - [x] 自选文件编码
 - [ ] 并列显示不同分歧轨道
-- 全局元信息
-    - [x] TITLE:
-    - [x] SUBTITLE:
-    - [x] BPM:
-    - [x] WAVE:
-    - [x] OFFSET:
-    - [x] DEMOSTART:
-    - [ ] SCOREMODE:
-    - [x] GENRE:
-    - [ ] STYLE:
-- 各难度内部元信息
-    - COURSE:
-        - [x] Easy / 0
-        - [x] Normal / 1
-        - [x] Hard / 2
-        - [x] Oni / 3
-        - [x] Edit / Ura / 4
-    - [x] LEVEL:
-    - [x] BALLOON:
-    - [x] SCOREINIT:
-    - [x] SCOREDIFF:
+- 元信息（通用）
+    - [x] `TITLE`
+    - [ ] `SUBTITLE`
+    - [x] `BPM`
+    - [ ] `GENRE`
+- 元信息（各难度独立）
+    - `COURSE`
+        - [x] `Easy` / `0`
+        - [x] `Normal` / `1`
+        - [x] `Hard` / `2`
+        - [x] `Oni` / `3`
+        - [x] `Edit` / `Ura` / `4`
+        - [ ] `Tower` / `5`
+        - [ ] `Dan` / `6`
+    - [x] `LEVEL`
+    - [x] `BALLOON`
+    - [ ] `STYLE`
 - 音符
-    - [x] 0（空）
-    - [x] 1（小咚）
-    - [x] 2（小咔）
-    - [x] 3（大咚）
-    - [x] 4（大咔）
-    - [x] 5（小滚奏开始）
-    - [x] 6（大滚奏开始）
-    - [x] 7（小气球开始）
-    - [x] 8（滚奏/气球结束）
-    - [x] 9（大气球开始）
-    - [x] A（双人咚）
-    - [x] B（双人咔）
-    - [x] C（炸弹）
-    - [x] F（隐藏音符）
-    - [x] G（紫/绿音符）
+    - [x] `0`（空）
+    - [x] `1`（小咚）
+    - [x] `2`（小咔）
+    - [x] `3`（大咚）
+    - [x] `4`（大咔）
+    - [x] `5`（小滚奏开始）
+    - [x] `6`（大滚奏开始）
+    - [x] `7`（小气球开始）
+    - [x] `8`（滚奏/气球结束）
+    - [x] `9`（大气球开始）
+    - [x] `A`（双人咚）
+    - [x] `B`（双人咔）
+    - [x] `C`（炸弹）
+    - [x] `F`（隐藏音符）
+    - [x] `G`（紫/绿音符）
 - 指令
-    - [x] #START
-    - [x] #END
-    - [x] #GOGOSTART
-    - [x] #GOGOEND
-    - [x] #MEASURE
-    - [x] #SCROLL
-    - [x] #BPMCHANGE
-    - [ ] #DELAY
-    - [x] #BRANCHSTART
-    - [x] #BRANCHEND
-    - [x] #N
-    - [x] #E
-    - [x] #M
-    - [x] #LEVELHOLD
-    - [ ] #BARLINEOFF
-    - [ ] #BARLINEON
-
+    - [x] `#START`
+    - [x] `#END`
+    - [x] `#MEASURE`
+    - [x] `#BPMCHANGE`
+    - [ ] `#DELAY`
+    - [x] `#SCROLL`
+    - [x] `#GOGOSTART`
+    - [x] `#GOGOEND`
+    - [ ] `#BARLINEOFF`
+    - [ ] `#BARLINEON`
+    - [x] `#BRANCHSTART` (仅显示最难分支)
+    - [x] `#N`
+    - [x] `#E`
+    - [x] `#M`
+    - [x] `#BRANCHEND`
+    - [ ] `#LYRIC`
+    - [ ] `#LEVELHOLD`
+    - [ ] `#NEXTSONG`
 # 致谢
 
 - [Snack](https://github.com/Snack-X)：项目的原作者

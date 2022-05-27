@@ -40,7 +40,9 @@ npm run build
 
 You shall then open `index.html` (not `src/index.html`) in your browser.
 
-## Example
+## Examples
+
+![](示例.png)
 
 ![](示例-春节序曲-谱面.png)
 
@@ -50,60 +52,58 @@ You shall then open `index.html` (not `src/index.html`) in your browser.
 
 - [x] Manual Selection of file encoding
 - [ ] Show different branches side-by-side
-- Global Header
-    - [x] TITLE:
-    - [x] SUBTITLE:
-    - [x] BPM:
-    - [x] WAVE:
-    - [x] OFFSET:
-    - [x] DEMOSTART:
-    - [ ] SCOREMODE:
-    - [x] GENRE:
-    - [ ] STYLE:
-- Per-course Headers
-    - COURSE:
-        - [x] Easy / 0
-        - [x] Normal / 1
-        - [x] Hard / 2
-        - [x] Oni / 3
-        - [x] Edit / Ura / 4
-    - [x] LEVEL:
-    - [x] BALLOON:
-    - [x] SCOREINIT:
-    - [x] SCOREDIFF:
-- 音符
-    - [x] 0 (empty)
-    - [x] 1 (Don)
-    - [x] 2 (Ka)
-    - [x] 3 (DON)
-    - [x] 4 (KA)
-    - [x] 5 (Drumroll starts)
-    - [x] 6 (DRUMROLL starts)
-    - [x] 7 (Balloon starts)
-    - [x] 8 (drumroll/balloon ends)
-    - [x] 9 (BALLOON starts)
-    - [x] A (partner Don)
-    - [x] B (partner Ka)
-    - [x] C (Bomb)
-    - [x] F (ADLIB)
-    - [x] G (Green/Purple)
-- Command
-    - [x] #START
-    - [x] #END
-    - [x] #GOGOSTART
-    - [x] #GOGOEND
-    - [x] #MEASURE
-    - [x] #SCROLL
-    - [x] #BPMCHANGE
-    - [ ] #DELAY
-    - [x] #BRANCHSTART
-    - [x] #BRANCHEND
-    - [x] #N
-    - [x] #E
-    - [x] #M
-    - [x] #LEVELHOLD
-    - [ ] #BARLINEOFF
-    - [ ] #BARLINEON
+- Meta (common)
+    - [x] `TITLE`
+    - [ ] `SUBTITLE`
+    - [x] `BPM`
+    - [ ] `GENRE`
+- Meta (course-specific)
+    - `COURSE`
+        - [x] `Easy` / `0`
+        - [x] `Normal` / `1`
+        - [x] `Hard` / `2`
+        - [x] `Oni` / `3`
+        - [x] `Edit` / `Ura` / `4`
+        - [ ] `Tower` / `5`
+        - [ ] `Dan` / `6`
+    - [x] `LEVEL`
+    - [x] `BALLOON`
+    - [ ] `STYLE`
+- Notes
+    - [x] `0` (empty)
+    - [x] `1` (Don)
+    - [x] `2` (Ka)
+    - [x] `3` (DON)
+    - [x] `4` (KA)
+    - [x] `5` (Drumroll starts)
+    - [x] `6` (DRUMROLL starts)
+    - [x] `7` (Balloon starts)
+    - [x] `8` (drumroll/balloon ends)
+    - [x] `9` (BALLOON starts)
+    - [x] `A` (partner Don)
+    - [x] `B` (partner Ka)
+    - [x] `C` (Bomb)
+    - [x] `F` (ADLIB)
+    - [x] `G` (Green/Purple)
+- Commands
+    - [x] `#START`
+    - [x] `#END`
+    - [x] `#MEASURE`
+    - [x] `#BPMCHANGE`
+    - [ ] `#DELAY`
+    - [x] `#SCROLL`
+    - [x] `#GOGOSTART`
+    - [x] `#GOGOEND`
+    - [ ] `#BARLINEOFF`
+    - [ ] `#BARLINEON`
+    - [x] `#BRANCHSTART` (only the highest branch is displayed)
+    - [x] `#N`
+    - [x] `#E`
+    - [x] `#M`
+    - [x] `#BRANCHEND`
+    - `#LYRIC`
+    - [ ] `#LEVELHOLD`
+    - [ ] `#NEXTSONG`
 
 # Acknowledgement
 
