@@ -23,6 +23,7 @@ const $autoScrollToBottom = $('#auto-scroll-to-bottom').first();
 const $editorProcess = $('.editor-process');
 const $input = $('.area-editor .input');
 const $errors = $('.area-errors .errors');
+const $rendaHead = $('.renda-head');
 
 let tjaParsed = null;
 let selectedDifficulty = '';
@@ -99,6 +100,22 @@ function showStatistics() {
     }
 }
 
+function toFixedZero(num) {
+	let newNum = num;
+	while (true) {
+		if (newNum.charAt(newNum.length - 1) === '0') {
+			newNum = newNum.slice(0, -1);
+		} else if (newNum.charAt(newNum.length - 1) === '.') {
+			newNum = newNum.slice(0, -1);
+			break;
+		} else {
+			break;
+		}
+	}
+    
+    return newNum;
+}
+
 function buildStatisticsPage(data) {
     const { statistics: stats, graph } = data;
 
@@ -122,9 +139,33 @@ function buildStatisticsPage(data) {
         Math.floor(stats.totalCombo / 100) * 10000
     );
 
-    if (stats.rendas.length) $('.stat-max-score').text(`${statPotential}`);
-    else $('.stat-max-score').text(`${statPotential} Points`);
-
+    if (stats.rendas.length) $('.stat-max-score').text(`${statPotential} 点 + 連打`);
+    else $('.stat-max-score').text(`${statPotential} 点`);
+	
+	let bpmMin = 0, bpmMax = 0, firstBpm = true;
+	for (let i = 0; i < course.measures.length; i++) {
+		for (let j = 0; j < course.measures[i].events.length; j++) {
+			if (course.measures[i].events[j].name === 'bpm') {
+				let curBpm = course.measures[i].events[j].value;
+				
+				if (firstBpm) {
+					bpmMin = curBpm;
+					bpmMax = curBpm;
+					firstBpm = false;
+				} else {
+					if (bpmMin > curBpm) {
+						bpmMin = curBpm;
+					}
+					if (bpmMax < curBpm) {
+						bpmMax = curBpm;
+					}
+				}
+			}
+		}
+	}
+	if (bpmMin.toFixed(2) != bpmMax.toFixed(2)) $('.stat-bpm').text(toFixedZero(bpmMin.toFixed(2)) + '-' + toFixedZero(bpmMax.toFixed(2)));
+	else $('.stat-bpm').text(toFixedZero(bpmMax.toFixed(2)));
+	
     $('.stat-don-small').text(stats.notes[0]);
     $('.stat-don-big').text(stats.notes[2]);
     $('.stat-kat-small').text(stats.notes[1]);
@@ -140,14 +181,14 @@ function buildStatisticsPage(data) {
     $('.stat-don-ratio').text(statDonRatio.toFixed(2) + '%');
     $('.stat-kat-ratio').text(statKatRatio.toFixed(2) + '%');
 
-    $('.stat-density').text((stats.totalCombo / stats.length).toFixed(3));
+    $('.stat-density').text(((stats.totalCombo - 1) / stats.length).toFixed(2));
     $('.stat-length').text(stats.length.toFixed(2));
 
-    $('.stat-renda').text(stats.rendas.map(r => r.toFixed(3) + 's').join(' + '));
-    $('.stat-renda-total').text(stats.rendas.reduce((a, b) => a + b, 0).toFixed(3) + 's');
+    $('.stat-renda').text(stats.rendas.map(r => r.toFixed(3) + '秒').join(' + '));
+    $('.stat-renda-total').text(stats.rendas.reduce((a, b) => a + b, 0).toFixed(3) + '秒');
 
     $('.stat-balloon').html(stats.balloons.map(b => (
-        `${b[1]}hit(s) / ${b[0].toFixed(3)}s = ${(b[1] / b[0]).toFixed(3)} hit/s`
+        `${b[1]}打 / ${b[0].toFixed(3)}秒 = ${(b[1] / b[0]).toFixed(3)} 打/秒`
     )).join('<br>'));
 
     // Graph
@@ -196,11 +237,70 @@ function buildStatisticsPage(data) {
         .call(makeAxisY());
 }
 
+function copyRendaText(rendas, rendaExtends) {
+	let result = '', groupCount = 0, groupFirst = true;
+	const groupMax = rendaExtends.reduce((a, b) => Math.max(a, b.rendaGroup), -1);
+	
+	for (let i = 0; i < rendas.length; i++) {
+		if (rendaExtends[i].rendaGroup != groupCount) {
+			groupCount += 1;
+			groupFirst = true;
+		}
+		
+		if (groupFirst) {
+			if (rendaExtends[i].isBigRenda) {
+				result += 'SIZE(16){';
+			}
+			
+			if (rendaExtends[i].isGoGoRenda) {
+				result += '\'\'';
+			}
+			
+			result += '約' + rendas[i].toFixed(3) + '秒'
+			
+			if (rendaExtends[i].isGoGoRenda) {
+				result += '\'\'';
+			}
+			
+			if (rendaExtends[i].isBigRenda) {
+				result += '}';
+			}
+			
+			let groupNum = rendaExtends.reduce((a, b) => (b.rendaGroup === groupCount ? a + 1 : a), 0);
+			if (groupNum > 1) {
+				result += '×' + groupNum;
+			}
+			
+			if (rendaExtends[i].rendaGroup != groupMax) {
+				result += '－';
+			}
+			
+			groupFirst = false;
+		}
+	}
+	
+	if (rendas.length > 1) {
+		result += '： 合計約' + rendas.reduce((a, b) => a + b, 0).toFixed(3) + '秒';
+	}
+	
+	if (result != '') {
+		navigator.clipboard.writeText('-連打秒数・・・' + result);
+	}
+}
+
 //==============================================================================
 
 $editorProcess.on('click', () => {
     processTJA();
     showPreview();
+});
+
+$rendaHead.on('click', () => {
+	if (selectedDifficulty === '') return;
+	
+    const data = analyseChart(tjaParsed, selectedDifficulty);
+	const { statistics: stats, graph } = data;
+	copyRendaText(stats.rendas, stats.rendaExtends);
 });
 
 $input.on('input', () => {

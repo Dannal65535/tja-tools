@@ -136,9 +136,10 @@ function getStatistics(course) {
     // renda length, balloon speed
     // potential score, score equations, recommended score variables
 
-    const notes = [0, 0, 0, 0], rendas = [], balloons = [];
+    const notes = [0, 0, 0, 0], rendas = [], rendaExtends = [], balloons = [];
     let start = 0, end = 0, combo = 0;
-    let rendaStart = false, balloonStart = false, balloonCount = 0, balloonGogo = 0;
+    let rendaStart = false, rendaStartTime = 0, balloonStart = false, balloonStartTime = 0, balloonCount = 0, balloonGogo = 0;
+	let isBigRenda = false, isGoGoRenda = false, rendaGroup = 0;
     let scCurEventIdx = 0, scCurEvent = course.events[scCurEventIdx];
     let scGogo = 0;
     let scNotes = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
@@ -189,11 +190,15 @@ function getStatistics(course) {
         }
 
         if (note.type === 'renda' || note.type === 'rendaBig') {
-            rendaStart = note.time;
+            rendaStartTime = note.time;
+			rendaStart = true;
+			isBigRenda = note.type === 'rendaBig' ? 1 : 0;
+			isGoGoRenda = scGogo;
             continue;
         }
         else if (note.type === 'balloon') {
-            balloonStart = note.time;
+            balloonStartTime = note.time;
+			balloonStart = true;
             balloonCount = note.count;
             balloonGogo = scGogo;
 
@@ -201,11 +206,24 @@ function getStatistics(course) {
         }
         else if (note.type === 'end') {
             if (rendaStart) {
-                rendas.push(note.time - rendaStart);
+                rendas.push(note.time - rendaStartTime);
+				
+				if (rendaExtends.length > 0) {
+					if (rendaExtends[rendaExtends.length - 1].isBigRenda != isBigRenda ||
+						rendaExtends[rendaExtends.length - 1].isGoGoRenda != isGoGoRenda ||
+						rendas[rendaExtends.length - 1].toFixed(3) != (note.time - rendaStartTime).toFixed(3)) {
+						rendaGroup += 1;
+					}
+				}
+				rendaExtends.push({
+					isBigRenda: isBigRenda,
+					isGoGoRenda: isGoGoRenda,
+					rendaGroup: rendaGroup
+				});
                 rendaStart = false;
             }
             else if (balloonStart) {
-                const balloonLength = note.time - balloonStart;
+                const balloonLength = note.time - balloonStartTime;
                 const balloonSpeed = balloonCount / balloonLength;
                 balloons.push([balloonLength, balloonCount]);
                 balloonStart = false;
@@ -217,12 +235,13 @@ function getStatistics(course) {
             }
         }
     }
-
+	
     return {
         totalCombo: combo,
         notes: notes,
         length: end - start,
         rendas: rendas,
+		rendaExtends: rendaExtends,
         balloons: balloons,
         score: {
             score: scPotential,
