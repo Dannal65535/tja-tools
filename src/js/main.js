@@ -284,7 +284,7 @@ function copyRendaText(rendas, rendaExtends) {
 	}
 	
 	if (result != '') {
-		navigator.clipboard.writeText('-連打秒数・・・' + result);
+		navigator.clipboard.writeText('-連打秒数目安・・・' + result);
 	}
 }
 
