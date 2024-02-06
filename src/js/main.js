@@ -73,8 +73,10 @@ function showPreview() {
     document.fonts.load('5px "Pixel 3x5"').then(() => {
         try {
             const $canvas = drawChart(tjaParsed, selectedDifficulty);
-            $canvas.id = 'tja-preview';
-            $('.page-preview').append($canvas);
+			const $img = document.createElement('img');
+            $img.id = 'tja-preview';
+			$img.src = $canvas.toDataURL();
+            $('.page-preview').append($img);
 
             displayErrors('No error');
         } catch (e) {
@@ -100,7 +102,7 @@ function showStatistics() {
     }
 }
 
-function toFixedZero(num) {
+export function toFixedZero(num) {
 	let newNum = num;
 	while (true) {
 		if (newNum.charAt(newNum.length - 1) === '0') {

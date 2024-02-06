@@ -41,6 +41,7 @@ function parseLine(line) {
         'BARLINEON',
 
         'TTBREAK',
+		'NEWLINE',
     ];
 
     let match;
@@ -225,6 +226,20 @@ function getCourse(tjaHeaders, lines) {
                             });
                             break;
 
+                        case 'BARLINEON':
+                            measureEvents.push({
+                                name: 'barlineon',
+                                position: measureData.length,
+                            });
+                            break;
+
+                        case 'BARLINEOFF':
+                            measureEvents.push({
+                                name: 'barlineoff',
+                                position: measureData.length,
+                            });
+                            break;
+
                         case 'SCROLL':
                             measureEvents.push({
                                 name: 'scroll',
@@ -242,6 +257,7 @@ function getCourse(tjaHeaders, lines) {
                             break;
 
                         case 'TTBREAK':
+						case 'NEWLINE':
                             measureProperties['ttBreak'] = true;
                             break;
 

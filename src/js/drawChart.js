@@ -1,4 +1,5 @@
 import { drawLine, drawCircle, drawRect, drawText, drawPixelText } from './canvasHelper';
+import { toFixedZero } from './main';
 
 //==============================================================================
 // Drawing config and helpers
@@ -211,10 +212,11 @@ export default function (chart, courseId) {
             drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 2, rowWidth, ROW_HEIGHT_NOTE - 4, '#fff');
             drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 4, rowWidth, ROW_HEIGHT_NOTE - 8, '#999');
         }
+		
+		const fixedTitle = (course.course === 4) ? chart.headers.title + '(裏譜面)' : chart.headers.title;
+        drawText(ctx, 8, 8, fixedTitle, 'bold 28px sans-serif', '#000', 'top', 'left');
 
-        drawText(ctx, 8, 8, chart.headers.title, 'bold 28px sans-serif', '#000', 'top', 'left');
-
-        const difficulty = ['Easy', 'Normal', 'Hard', 'Oni', 'Edit'];
+        const difficulty = ['かんたん', 'ふつう', 'むずかしい', 'おに', 'おに'];
         const levelMax = [5, 7, 8, 10, 10];
         const difficultyText = (
             difficulty[course.course] + ' ' +
@@ -229,6 +231,8 @@ export default function (chart, courseId) {
 
         let gogoStart = false;
         let measureNumber = 1;
+		let barline = true;
+		let barlineTemp;
 
         for (let ridx = 0; ridx < rows.length; ridx++) {
             const row = rows[ridx], measures = row.measures;
@@ -272,12 +276,30 @@ export default function (chart, courseId) {
                 // Sub grid
                 const ny = y + ROW_HEIGHT_INFO;
 
-                for (let i = 1; i < measure.length[0] * 2; i++) {
+                for (let i = 0; i < measure.length[0] * 2 + 1; i++) {
                     const subBeat = i / measure.length[1] * 2;
                     const subx = GET_BEAT_X(beat + subBeat);
                     const style = '#fff' + (i % 2 ? '4' : '8');
 
                     drawLine(ctx, subx, ny, subx, ny + ROW_HEIGHT_NOTE, 2, style);
+                }
+
+				// Events Pre
+				barlineTemp = barline;
+				for (let i = 0; i < measure.events.length; i++) {
+					const event = measure.events[i];
+                    if (event.name === 'barlineon') {
+						barline = true;
+						if (event.position === 0) {
+							barlineTemp = true;
+						}
+					}
+					else if (event.name === 'barlineoff') {
+						barline = false;
+						if (event.position === 0) {
+							barlineTemp = false;
+						}
+					}
                 }
 
                 // Events
@@ -287,27 +309,72 @@ export default function (chart, courseId) {
                     const ex = GET_BEAT_X(beat + eBeat);
 
                     if (event.name === 'scroll') {
-                        drawLine(ctx, ex, y, ex, y + ROW_HEIGHT, 2, '#444');
-                        drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 13, 'HS ' + event.value.toString(), '#f00', 'bottom', 'left');
+						if (barlineTemp || event.position > 0) {
+							drawLine(ctx, ex, y, ex, y + ROW_HEIGHT, 2, '#444');
+						}
+                        drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 13, 'HS ' + toFixedZero(event.value.toFixed(2)), '#f00', 'bottom', 'left');
                     }
                     else if (event.name === 'bpm') {
-                        drawLine(ctx, ex, y, ex, y + ROW_HEIGHT, 2, '#444');
-                        drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 7, 'BPM ' + event.value.toString(), '#00f', 'bottom', 'left');
+						if (barlineTemp || event.position > 0) {
+							drawLine(ctx, ex, y, ex, y + ROW_HEIGHT, 2, '#444');
+						}
+                        drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 7, 'BPM ' + toFixedZero(event.value.toFixed(2)), '#00f', 'bottom', 'left');
                     }
                 }
 
                 // Measure lines, number
-                drawLine(ctx, mx, y, mx, y + ROW_HEIGHT, 2, '#fff');
+				if (barlineTemp) {
+					drawLine(ctx, mx, y, mx, y + ROW_HEIGHT, 2, '#fff');
+				}
                 drawPixelText(ctx, mx + 2, y + ROW_HEIGHT_INFO - 1, measureNumber.toString(), '#000', 'bottom', 'left');
                 measureNumber += 1;
 
                 beat += mBeat;
 
                 // Draw last measure line
-                if (midx + 1 === measures.length) {
-                    const mx2 = GET_BEAT_X(beat);
-                    drawLine(ctx, mx2, y, mx2, y + ROW_HEIGHT, 2, '#fff');
-                }
+				barlineTemp = barline;
+				if (ridx === rows.length - 1 && midx === measures.length - 1) {
+					barlineTemp = false;
+				}
+				else if (midx === measures.length - 1) {
+					const measureTemp = rows[ridx + 1].measures[0];
+					for (let i = 0; i < measureTemp.events.length; i++) {
+						const event = measureTemp.events[i];
+						if (event.name === 'barlineon') {
+							if (event.position === 0) {
+								barlineTemp = true;
+							}
+						}
+						else if (event.name === 'barlineoff') {
+							if (event.position === 0) {
+								barlineTemp = false;
+							}
+						}
+					}
+				}
+				else {
+					for (let i = 0; i < measures[midx + 1].events.length; i++) {
+						const event = measures[midx + 1].events[i];
+						if (event.name === 'barlineon') {
+							if (event.position === 0) {
+								barlineTemp = true;
+							}
+						}
+						else if (event.name === 'barlineoff') {
+							if (event.position === 0) {
+								barlineTemp = false;
+							}
+						}
+					}
+				}
+				
+				if (barlineTemp) {
+					if (midx + 1 === measures.length) {
+						const mx2 = GET_BEAT_X(beat);
+						drawLine(ctx, mx2, y, mx2, y + ROW_HEIGHT, 2, '#fff');
+					}
+				}
+                
             }
         }
 
