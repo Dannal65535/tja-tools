@@ -1,6 +1,6 @@
 # TJA Tools
 
-[中文](README.md) English
+[日本語](README.md) [中文](README-CH.md) English
 
 A tool to visualize `.tja` chart files. Forked from [Snack](https://github.com/Snack-X)'s [tja-tools](https://github.com/Snack-X/tja-tools).
 

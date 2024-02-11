@@ -7,6 +7,11 @@ function parseLine(line) {
         'OFFSET',
         'DEMOSTART',
         'GENRE',
+		'FONT',
+		'SPROLL',
+		'LEVELCOLOR',
+		'LEVELURA',
+		'TITLECOLOR',
     ];
 
     const HEADER_COURSE = [
@@ -42,6 +47,7 @@ function parseLine(line) {
 
         'TTBREAK',
 		'NEWLINE',
+		'MOVEEVENT',
     ];
 
     let match;
@@ -256,6 +262,14 @@ function getCourse(tjaHeaders, lines) {
                             });
                             break;
 
+						case 'MOVEEVENT':
+                            measureEvents.push({
+                                name: 'moveEvent',
+                                position: measureData.length,
+                                value: parseInt(line.value),
+                            });
+                            break;
+
                         case 'TTBREAK':
 						case 'NEWLINE':
                             measureProperties['ttBreak'] = true;
@@ -368,6 +382,11 @@ export default function parseTJA(tja) {
         offset: 0,
         demoStart: 0,
         genre: '',
+		font: 'donscore',
+		spRoll: 'kusudama',
+		levelColor: 0,
+		levelUra: 0,
+		titleColor: 0,
     };
 
     const courses = {};
@@ -410,6 +429,35 @@ export default function parseTJA(tja) {
 
                 case 'GENRE':
                     headers.genre = parsed.value;
+                    break;
+				
+				case 'FONT':
+                    headers.font = parsed.value;
+                    break;
+				
+				case 'SPROLL':
+                    headers.spRoll = parsed.value;
+                    break;
+				
+				case 'LEVELCOLOR':
+                    headers.levelColor = parseInt(parsed.value, 10);
+					if (isNaN(headers.levelColor)) {
+						headers.levelColor = 0;
+					}
+                    break;
+				
+				case 'LEVELURA':
+                    headers.levelUra = parseInt(parsed.value, 10);
+					if (isNaN(headers.levelUra)) {
+						headers.levelUra = 0;
+					}
+                    break;
+				
+				case 'TITLECOLOR':
+                    headers.titleColor = parseInt(parsed.value, 10);
+					if (isNaN(headers.titleColor)) {
+						headers.titleColor = 0;
+					}
                     break;
             }
         }

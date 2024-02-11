@@ -8,6 +8,7 @@ import iconv from 'iconv-lite';
 
 import parseTJA from './parseTJA';
 import drawChart from './drawChart';
+import { initUsedSprite } from './drawChart';
 import analyseChart from './analyseChart';
 
 import '../css/style.scss';
@@ -69,13 +70,26 @@ function showPreview() {
     if (selectedDifficulty === '') return;
 
     $('#tja-preview').remove();
-
-    document.fonts.load('5px "Pixel 3x5"').then(() => {
+	
+	let fontPromises = []
+	if (tjaParsed.headers.font === 'nijiiro' || tjaParsed.headers.font === 'Nijiiro') {
+		fontPromises.push(document.fonts.load('bold 28px "nijiiro"'));
+		fontPromises.push(document.fonts.load('bold 17px "nijiiro"'));
+	}
+	else if (tjaParsed.headers.font === 'beforeArcade' || tjaParsed.headers.font === 'BeforeArcade') {
+		fontPromises.push(document.fonts.load('bold 28px "beforeArcade"'));
+		fontPromises.push(document.fonts.load('bold 17px "beforeArcade"'));
+	}
+	else {
+		fontPromises.push(document.fonts.load('5px "Pixel 3x5"'));
+	}
+	
+    Promise.all(fontPromises).then(() => {
         try {
             const $canvas = drawChart(tjaParsed, selectedDifficulty);
-			const $img = document.createElement('img');
-            $img.id = 'tja-preview';
-			$img.src = $canvas.toDataURL();
+			const $img =  document.createElement('img');
+            $img.id =  'tja-preview';
+			$img.src =  $canvas.toDataURL();
             $('.page-preview').append($img);
 
             displayErrors('No error');
@@ -373,6 +387,10 @@ $('.controls-page .button').on('click', evt => {
     selectedPage = page;
     updateUI();
 });
+
+window.onload = async function() {
+	await initUsedSprite();
+}
 
 //==============================================================================
 
