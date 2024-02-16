@@ -22,6 +22,38 @@ const NOTE_RADIUS = 9;
 
 const GET_ROW_Y = row => CHART_PADDING_TOP + ((ROW_HEIGHT + ROW_MARGIN_BOTTOM) * row);
 const GET_BEAT_X = beat => ROW_LEADING + (beat * BEAT_WIDTH);
+let rowDeltas = [];
+const branchTypes = ['N','E','M'];
+
+function sumNums(array, offset = -1) {
+	let result = 0;
+	if (offset === -1) {
+		offset = array.length;
+	}
+	
+	for (let i = 0; i < array.length; i++) {
+		if (i === offset) {
+			break;
+		}
+		result += array[i];
+	}
+	
+	return result;
+}
+
+export function compareArray(array1, array2) {
+    if (array1.length !== array2.length) {
+        return false;
+    }
+
+    for (let i = 0; i < array1.length; i++) {
+        if (array1[i] !== array2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 //==============================================================================
 // Notes
@@ -29,7 +61,7 @@ const GET_BEAT_X = beat => ROW_LEADING + (beat * BEAT_WIDTH);
 function getNoteCenter(row, beat) {
     return {
         x: GET_BEAT_X(beat),
-        y: GET_ROW_Y(row) + ROW_OFFSET_NOTE_CENTER,
+        y: GET_ROW_Y(row) + ROW_OFFSET_NOTE_CENTER + sumNums(rowDeltas, row),
     };
 }
 
@@ -55,9 +87,9 @@ function drawBigNote(ctx, row, beat, color) {
     drawCircle(ctx, x, y, NOTE_RADIUS, color);
 }
 
-function drawNoteSprite(ctx, row, beat, type) {
+function drawNoteSprite(ctx, row, yDelta, beat, type) {
 	const { x, y } = getNoteCenter(row, beat);
-	drawSprite(ctx, x - 12, y - 12, type, 'notes');
+	drawSprite(ctx, x - 12, y - 12 + yDelta, type, 'notes');
 }
 
 //==============================================================================
@@ -105,7 +137,7 @@ function drawLong(ctx, rows, sRow, sBeat, eRow, eBeat, color, type = 'body') {
 
         // full rows
         for (let r = sRow + 1; r < eRow; r++) {
-            let ry = GET_ROW_Y(r);
+            let ry = GET_ROW_Y(r) + sumNums(rowDeltas, r);
             let rw = GET_BEAT_X(rows[r].totalBeat) + ROW_TRAILING;
 
             if (isGogo) {
@@ -134,10 +166,17 @@ function drawLong(ctx, rows, sRow, sBeat, eRow, eBeat, color, type = 'body') {
     }
 }
 
-function drawLongSprite(ctx, rows, sRow, sBeat, eRow, eBeat, type) {
+function drawLongSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type) {
     let { x: sx, y: sy } = getNoteCenter(sRow, sBeat);
     let { x: ex, y: ey } = getNoteCenter(eRow, eBeat);
-
+	sy += (rows[sRow].branch.indexOf(bt) * 24);
+	if (eRow != undefined) {
+		ey += (rows[eRow].branch.indexOf(bt) * 24);
+	}
+	else {
+		ey += (rows[rows.length - 1].branch.indexOf(bt) * 24);
+	}
+	
     const isGogo = false;
     const isBig = false;
 
@@ -172,7 +211,13 @@ function drawLongSprite(ctx, rows, sRow, sBeat, eRow, eBeat, type) {
 
         // full rows
         for (let r = sRow + 1; r < eRow; r++) {
-            let ry = GET_ROW_Y(r);
+            let ry;
+			if (r != undefined) {
+				ry = GET_ROW_Y(r) + (rows[r].branch.indexOf(bt) * 24);
+			}
+			else {
+				ry = GET_ROW_Y(r) + (rows[rows.length - 1].branch.indexOf(bt) * 24);
+			}
             let rw = GET_BEAT_X(rows[r].totalBeat) + ROW_TRAILING;
 
             if (isGogo) {
@@ -215,10 +260,12 @@ function drawRendaBig(ctx, rows, sRow, sBeat, eRow, eBeat) {
     drawBigNote(ctx, sRow, sBeat, '#ffef43');
 }
 
-function drawRendaSprite(ctx, rows, sRow, sBeat, eRow, eBeat, type) {
-	drawNoteSprite(ctx, eRow, eBeat, type + 'End');
-	drawLongSprite(ctx, rows, sRow, sBeat, eRow, eBeat, type + 'Middle');
-	drawNoteSprite(ctx, sRow, sBeat, type + 'Start');
+function drawRendaSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type) {
+	if (eRow != undefined) {
+		drawNoteSprite(ctx, eRow, rows[eRow].branch.indexOf(bt) * 24, eBeat, type + 'End');
+	}
+	drawLongSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type + 'Middle');
+	drawNoteSprite(ctx, sRow, rows[sRow].branch.indexOf(bt) * 24, sBeat, type + 'Start');
 }
 
 function drawBalloon(ctx, rows, sRow, sBeat, eRow, eBeat, count, imo = false) {
@@ -230,7 +277,7 @@ function drawBalloon(ctx, rows, sRow, sBeat, eRow, eBeat, count, imo = false) {
     drawPixelText(ctx, x, y + 0.5, count.toString(), '#000');
 }
 
-function drawBalloonSprite(ctx, rows, sRow, sBeat, eRow, eBeat, count, imo = false, spSymbol = 'kusudama') {
+function drawBalloonSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, count, imo = false, spSymbol = 'kusudama') {
 	let symbol = 'balloon';
 	if (imo) {
 		if (spSymbol === 'denden') {
@@ -247,14 +294,16 @@ function drawBalloonSprite(ctx, rows, sRow, sBeat, eRow, eBeat, count, imo = fal
 		}
 	}
 	
-	drawNoteSprite(ctx, eRow, eBeat, 'spRollEnd');
-	drawLongSprite(ctx, rows, sRow, sBeat, eRow, eBeat, 'spRollMiddle');
-	drawNoteSprite(ctx, sRow, sBeat, 'spRollStart');
-	drawNoteSprite(ctx, sRow, sBeat, symbol);
+	if (eRow != undefined) {
+		drawNoteSprite(ctx, eRow, rows[eRow].branch.indexOf(bt) * 24, eBeat, 'spRollEnd');
+	}
+	drawLongSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, 'spRollMiddle');
+	drawNoteSprite(ctx, sRow, rows[sRow].branch.indexOf(bt) * 24, sBeat, 'spRollStart');
+	drawNoteSprite(ctx, sRow, rows[sRow].branch.indexOf(bt) * 24, sBeat, symbol);
 	
 	const { x, y } = getNoteCenter(sRow, sBeat);
 	const xDelta = Math.floor((count.toString().length * 6) / 2) - 3
-	drawImageText(ctx, x - 3 - xDelta, y - 3, count.toString(), 'num');
+	drawImageText(ctx, x - 3 - xDelta, y - 3 + (rows[sRow].branch.indexOf(bt) * 24), count.toString(), 'num');
 }
 
 //==============================================================================
@@ -271,26 +320,42 @@ export default function (chart, courseId) {
 
     const rows = [];
     let rowTemp = [], rowBeat = 0;
+	let preDataNum = 0;
+	let preBranch = [];
+	rowDeltas = [];
 
     for (let midx = 0; midx < course.measures.length; midx++) {
         const measure = course.measures[midx];
         const measureBeat = measure.length[0] / measure.length[1] * 4;
 
-        if (ttRowBeat < rowBeat + measureBeat || measure.properties.ttBreak) {
-            rows.push({ beats: rowBeat, measures: rowTemp });
+		let rowBranch = [];
+		for (let bt of branchTypes) {
+			if (measure.data[bt] != null) {
+				rowBranch.push(bt);
+			}
+		}
+
+        if (ttRowBeat < rowBeat + measureBeat || measure.properties.ttBreak || (midx > 0 && !compareArray(preBranch, rowBranch))) {
+            rows.push({ beats: rowBeat, measures: rowTemp, dataNum: preDataNum, branch: preBranch});
             rowTemp = [];
             rowBeat = 0;
         }
 
         rowTemp.push(measure);
         rowBeat += measureBeat;
+		preDataNum = measure.dataNum;
+		preBranch = rowBranch;
     }
 
     if (rowTemp.length)
-        rows.push({ beats: rowBeat, measures: rowTemp });
+        rows.push({ beats: rowBeat, measures: rowTemp, dataNum: preDataNum, branch: preBranch });
+
+	for (let ridx = 0; ridx < rows.length; ridx++) {
+		rowDeltas.push((rows[ridx].dataNum - 1) * 24);
+	}
 
     const canvasWidth = ROW_LEADING + (BEAT_WIDTH * ttRowBeat) + ROW_TRAILING;
-    const canvasHeight = CHART_PADDING_TOP + ((ROW_HEIGHT + ROW_MARGIN_BOTTOM) * rows.length) + CHART_PADDING_BOTTOM;
+    const canvasHeight = CHART_PADDING_TOP + ((ROW_HEIGHT + ROW_MARGIN_BOTTOM) * rows.length) + CHART_PADDING_BOTTOM + sumNums(rowDeltas);
 
     const $canvas = document.createElement('canvas');
     $canvas.width = canvasWidth;
@@ -315,19 +380,49 @@ export default function (chart, courseId) {
 
             const rowWidth = ROW_LEADING + (BEAT_WIDTH * totalBeat) + ROW_TRAILING;
 
-            const y = GET_ROW_Y(ridx);
+            const y = GET_ROW_Y(ridx) + sumNums(rowDeltas, ridx);
 
-            drawRect(ctx, 0, y + ROW_HEIGHT_INFO, rowWidth, ROW_HEIGHT_NOTE, '#000');
-            drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 2, rowWidth, ROW_HEIGHT_NOTE - 4, '#fff');
-			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 4, rowWidth, ROW_HEIGHT_NOTE - 8, '#d4d4d4');
-            drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 5, rowWidth, ROW_HEIGHT_NOTE - 10, '#aaaaaa');
-			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 6, rowWidth, ROW_HEIGHT_NOTE - 12, '#808080');
+			let rowOffset = 0;
+			const rowColor1 = {'N':'#d4d4d4','E':'#c9dede','M':'#dec9c9'};
+			const rowColor2 = {'N':'#aaaaaa','E':'#94bfbf','M':'#bf9494'};
+			const rowColor3 = {'N':'#808080','E':'#609f9f','M':'#9f6060'};
+            drawRect(ctx, 0, y + ROW_HEIGHT_INFO, rowWidth, 2, '#000');
+            drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 2, rowWidth, 2, '#fff');
+			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 4, rowWidth, 1, rowColor1[row.branch[0]]);
+            drawRect(ctx, 0, y + ROW_HEIGHT_INFO + 5, rowWidth, 1, rowColor2[row.branch[0]]);
+			rowOffset += 6;
+			
+			switch (row.dataNum) {
+				case 1:
+					drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset, rowWidth, ROW_HEIGHT_NOTE - 12, rowColor3[row.branch[0]]);
+					rowOffset += ROW_HEIGHT_NOTE - 12;
+					break;
+				case 2:
+					drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset, rowWidth, ROW_HEIGHT_NOTE - 10, rowColor3[row.branch[0]]);
+					rowOffset += ROW_HEIGHT_NOTE - 10;
+					drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset, rowWidth, ROW_HEIGHT_NOTE - 10, rowColor3[row.branch[1]]);
+					rowOffset += ROW_HEIGHT_NOTE - 10;
+					break;
+				case 3:
+					drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset, rowWidth, ROW_HEIGHT_NOTE - 10, rowColor3[row.branch[0]]);
+					rowOffset += ROW_HEIGHT_NOTE - 10;
+					drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset, rowWidth, ROW_HEIGHT_NOTE - 8, rowColor3[row.branch[1]]);
+					rowOffset += ROW_HEIGHT_NOTE - 8;
+					drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset, rowWidth, ROW_HEIGHT_NOTE - 10, rowColor3[row.branch[2]]);
+					rowOffset += ROW_HEIGHT_NOTE - 10;
+					break;
+			}
+			
+			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset, rowWidth, 1, rowColor2[row.branch[row.branch.length - 1]]);
+			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset + 1, rowWidth, 1, rowColor1[row.branch[row.branch.length - 1]]);
+			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset + 2, rowWidth, 2, '#fff');
+			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset + 4, rowWidth, 2, '#000');
         }
 		
 		let titleUraSymbol = '(裏譜面)';
 		let levelUraSymbol = '裏';
 		
-		if (chart.headers.font === 'beforeArcade' || chart.headers.font === 'BeforeArcade') {
+		if (chart.headers.font.toLowerCase() === 'beforenijiiro') {
 			titleUraSymbol = '─';
 			levelUraSymbol = '─';
 		}
@@ -391,13 +486,13 @@ export default function (chart, courseId) {
 			drawText(ctx, 8, 8, fixedTitle, 'bold 20px sans-serif', titleTextColor, 'top', 'left');
 			drawText(ctx, 8, 40, difficultyText, 'bold 17px sans-serif', levelTextColor, 'top', 'left');
 		}
-		else if (chart.headers.font === 'nijiiro' || chart.headers.font === 'Nijiiro') {
-			drawText(ctx, 8, 8, fixedTitle, 'bold 28px "nijiiro"', titleTextColor, 'top', 'left', true);
-			drawText(ctx, 8, 40, difficultyText, 'bold 17px "nijiiro"', levelTextColor, 'top', 'left');
+		else if (chart.headers.font.toLowerCase() === 'nijiiro') {
+			drawText(ctx, 8, 8, fixedTitle, 'bold 24px "Nijiiro"', titleTextColor, 'top', 'left', true);
+			drawText(ctx, 8, 40, difficultyText, 'bold 17px "Nijiiro"', levelTextColor, 'top', 'left');
 		}
-		else if (chart.headers.font === 'beforeArcade' || chart.headers.font === 'BeforeArcade') {
-			drawText(ctx, 8, 8, fixedTitle, 'bold 28px "beforeArcade"', titleTextColor, 'top', 'left', true);
-			drawText(ctx, 8, 40, difficultyText, 'bold 17px "beforeArcade"', levelTextColor, 'top', 'left');
+		else if (chart.headers.font.toLowerCase() === 'beforenijiiro') {
+			drawText(ctx, 8, 8, fixedTitle, 'bold 24px "BeforeNijiiro"', titleTextColor, 'top', 'left', true);
+			drawText(ctx, 8, 40, difficultyText, 'bold 17px "BeforeNijiiro"', levelTextColor, 'top', 'left');
 		}
 		else {
 			drawText(ctx, 11, 9, fixedTitle, 'bold 20px MS UI Gothic', titleTextColor, 'top', 'left');
@@ -413,6 +508,7 @@ export default function (chart, courseId) {
 		let barlineTemp;
 		let moveEvent = 0;
 		let moveEventTemp;
+		let sectionTemp = false;
 
         for (let ridx = 0; ridx < rows.length; ridx++) {
             const row = rows[ridx], measures = row.measures;
@@ -427,7 +523,7 @@ export default function (chart, courseId) {
                 // Go-go time
                 for (let i = 0; i < measure.events.length; i++) {
                     const event = measure.events[i];
-                    const eBeat = beat + (mBeat / (measure.data.length || 1) * event.position);
+                    const eBeat = beat + (mBeat / (measure.data[row.branch[0]].length || 1) * event.position);
 
                     if (event.name === 'gogoStart' && !gogoStart) {
                         gogoStart = [ridx, eBeat];
@@ -446,7 +542,7 @@ export default function (chart, courseId) {
             const row = rows[ridx], measures = row.measures;
             let beat = 0;
 
-            const y = GET_ROW_Y(ridx);
+            const y = GET_ROW_Y(ridx) + sumNums(rowDeltas, ridx);
 
             for (let midx = 0; midx < measures.length; midx++) {
                 const mx = GET_BEAT_X(beat);
@@ -461,12 +557,13 @@ export default function (chart, courseId) {
                     const subx = GET_BEAT_X(beat + subBeat);
                     const style = '#fff' + (i % 2 ? '4' : '8');
 
-                    drawLine(ctx, subx, ny, subx, ny + ROW_HEIGHT_NOTE, 2, style);
+                    drawLine(ctx, subx, ny, subx, ny + ROW_HEIGHT_NOTE + rowDeltas[ridx], 2, style);
                 }
 
 				// Events Pre
 				barlineTemp = barline;
 				moveEventTemp = moveEvent;
+				sectionTemp = false;
 				for (let i = 0; i < measure.events.length; i++) {
 					const event = measure.events[i];
                     if (event.name === 'barlineon') {
@@ -486,27 +583,74 @@ export default function (chart, courseId) {
 							moveEventTemp = isNaN(event.value) ? moveEvent : event.value;
 						}
 					}
+					else if (event.name === 'section') {
+						if (event.position === 0) {
+							sectionTemp = true;
+						}
+					}
                 }
 
                 // Events
                 for (let i = 0; i < measure.events.length; i++) {
                     const event = measure.events[i];
-                    const eBeat = mBeat / (measure.data.length || 1) * event.position;
+                    const eBeat = mBeat / (measure.data[row.branch[0]].length || 1) * event.position;
                     const ex = GET_BEAT_X(beat + eBeat);
 
                     if (event.name === 'scroll') {
+						let scrollsTemp = [];
+						
+						for (let b of branchTypes) {
+							if (event.value[b] === null) {
+								continue;
+							}
+							let duplicate = false;
+							for (let j = 0; j < scrollsTemp.length; j++) {
+								if (event.value[b] === scrollsTemp[j].value) {
+									scrollsTemp[j].branch.push(b);
+									duplicate = true;
+									break;
+								}
+							}
+							if (!duplicate) {
+								scrollsTemp.push({value:event.value[b], branch:[]});
+								scrollsTemp[scrollsTemp.length - 1].branch.push(b);
+							}
+						}
+						
 						if (barlineTemp || event.position > 0) {
-							drawLine(ctx, ex, y + moveEvent, ex, y + ROW_HEIGHT, 2, '#444');
+							drawLine(ctx, ex, y + moveEvent - ((scrollsTemp.length - 1) * 6), ex, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#444');
 						}
                         //drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 13, 'HS ' + toFixedZero(event.value.toFixed(2)), '#f00', 'bottom', 'left');
-						drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 18 + moveEvent, 'HS' + toFixedZero(event.value.toFixed(2)), 'hs');
+						
+						let scrollCount = 0;
+						for (let sTemp of scrollsTemp.reverse()) {
+							let scrollText = '';
+							
+							if (scrollsTemp.length != 1 || sTemp.branch.length != measure.dataNum) {
+								for (let stb of sTemp.branch) {
+									if (stb === 'N') {
+										scrollText += '普';
+									}
+									else if (stb === 'E') {
+										scrollText += '玄';
+									}
+									else if (stb === 'M') {
+										scrollText += '達';
+									}
+								}
+							}
+
+							scrollText += 'HS' + toFixedZero(parseFloat(sTemp.value).toFixed(2));
+							drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6), scrollText, 'hs');
+							scrollCount++;
+						}
                     }
                     else if (event.name === 'bpm') {
 						if (barlineTemp || event.position > 0) {
-							drawLine(ctx, ex, y + moveEvent, ex, y + ROW_HEIGHT, 2, '#444');
+							drawLine(ctx, ex, y + moveEvent, ex, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#444');
 						}
                         //drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 7, 'BPM ' + toFixedZero(event.value.toFixed(2)), '#00f', 'bottom', 'left');
-						drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 12 + moveEvent, 'BPM' + toFixedZero(event.value.toFixed(2)), 'bpm');
+						drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 12 + moveEvent, 'BPM' + toFixedZero(parseFloat(event.value).toFixed(2)), 'bpm');
                     }
 					else if (event.name === 'moveEvent') {
 						moveEvent = isNaN(event.value) ? moveEvent : event.value;
@@ -514,8 +658,12 @@ export default function (chart, courseId) {
                 }
 
                 // Measure lines, number
+				const firstLineColor = sectionTemp ? '#ffe400' : '#fff';
 				if (barlineTemp) {
-					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT, 2, '#fff');
+					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT + rowDeltas[ridx], 2, firstLineColor);
+				}
+				else if (sectionTemp) {
+					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT_INFO, 2, firstLineColor);
 				}
                 //drawPixelText(ctx, mx + 2, y + ROW_HEIGHT_INFO - 1, measureNumber.toString(), '#000', 'bottom', 'left');
 				drawImageText(ctx, mx, y + ROW_HEIGHT_INFO - 6, measureNumber.toString(), 'num');
@@ -563,7 +711,7 @@ export default function (chart, courseId) {
 				if (barlineTemp) {
 					if (midx + 1 === measures.length) {
 						const mx2 = GET_BEAT_X(beat);
-						drawLine(ctx, mx2, y, mx2, y + ROW_HEIGHT, 2, '#fff');
+						drawLine(ctx, mx2, y, mx2, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#fff');
 					}
 				}
                 
@@ -573,126 +721,135 @@ export default function (chart, courseId) {
         //============================================================================
         // 4. Notes
 
-        // Pre-scan balloon
+		for (let bt of branchTypes) {
+			// Pre-scan balloon
 
-        let balloonIdx = 0, imoStart = false;
-        for (let ridx = 0; ridx < rows.length; ridx++) {
-            const measures = rows[ridx].measures;
+			let balloonIdx = 0, imoStart = false;
+			for (let ridx = 0; ridx < rows.length; ridx++) {
+				const measures = rows[ridx].measures;
+				if (!rows[ridx].branch.includes(bt)) {
+					continue;
+				}
 
-            for (let midx = 0; midx < measures.length; midx++) {
-                const measure = measures[midx];
+				for (let midx = 0; midx < measures.length; midx++) {
+					const measure = measures[midx];
 
-                for (let didx = measure.data.length; didx >= 0; didx--) {
-                    const note = measure.data.charAt(didx);
-                    if (note === '7') {
-                        balloonIdx += 1;
-                    }
-                    else if (note === '9' && !imoStart) {
-                        imoStart = 1;
-                        balloonIdx += 1;
-                    }
-                    else if (note === '8' && imoStart) {
-                        imoStart = false;
-                    }
-                }
-            }
-        }
+					for (let didx = measure.data[bt].length; didx >= 0; didx--) {
+						const note = measure.data[bt].charAt(didx);
+						if (note === '7') {
+							balloonIdx += 1;
+						}
+						else if (note === '9' && !imoStart) {
+							imoStart = 1;
+							balloonIdx += 1;
+						}
+						else if (note === '8' && imoStart) {
+							imoStart = false;
+						}
+					}
+				}
+			}
 
-        if (course.headers.balloon.length < balloonIdx) {
-            throw new Error('BALLOON count mismatch');
-        }
+			if (course.headers.balloon[bt].length < balloonIdx) {
+				throw new Error('BALLOON count mismatch');
+			}
 
-        // Draw
+			// Draw
 
-        let longEnd = false, imo = false;
+			let longEnd = false, imo = false;
 
-        for (let ridx = rows.length - 1; ridx >= 0; ridx--) {
-            const row = rows[ridx], measures = row.measures;
-            let beat = 0;
+			for (let ridx = rows.length - 1; ridx >= 0; ridx--) {
+				const row = rows[ridx], measures = row.measures;
+				let beat = 0;
+				if (!row.branch.includes(bt)) {
+					continue
+				}
+				const rowYDelta = row.branch.indexOf(bt) * 24;
 
-            for (let midx = measures.length - 1; midx >= 0; midx--) {
-                const measure = measures[midx], mBeat = measure.length[0] / measure.length[1] * 4;
+				for (let midx = measures.length - 1; midx >= 0; midx--) {
+					const measure = measures[midx], mBeat = measure.length[0] / measure.length[1] * 4;
 
-                for (let didx = measure.data.length; didx >= 0; didx--) {
-                    const note = measure.data.charAt(didx);
-                    const nBeat = measure.rowBeat + (mBeat / measure.data.length * didx);
+					for (let didx = measure.data[bt].length; didx >= 0; didx--) {
+						const note = measure.data[bt].charAt(didx);
+						const nBeat = measure.rowBeat + (mBeat / measure.data[bt].length * didx);
 
-					let balloonCount;
-                    switch (note) {
-                        case '1':
-                            //drawSmallNote(ctx, ridx, nBeat, '#ff4242');
-							drawNoteSprite(ctx, ridx, nBeat, 'don');
-                            break;
+						let balloonCount;
+						switch (note) {
+							case '1':
+								//drawSmallNote(ctx, ridx, nBeat, '#ff4242');
+								drawNoteSprite(ctx, ridx, rowYDelta, nBeat, 'don');
+								break;
 
-                        case '2':
-                            //drawSmallNote(ctx, ridx, nBeat, '#43c8ff');
-							drawNoteSprite(ctx, ridx, nBeat, 'kat');
-                            break;
+							case '2':
+								//drawSmallNote(ctx, ridx, nBeat, '#43c8ff');
+								drawNoteSprite(ctx, ridx, rowYDelta, nBeat, 'kat');
+								break;
 
-                        case '3':
-                        case 'A':
-                            //drawBigNote(ctx, ridx, nBeat, '#ff4242');
-							drawNoteSprite(ctx, ridx, nBeat, 'bigDon');
-                            break;
+							case '3':
+							case 'A':
+								//drawBigNote(ctx, ridx, nBeat, '#ff4242');
+								drawNoteSprite(ctx, ridx, rowYDelta, nBeat, 'bigDon');
+								break;
 
-                        case '4':
-                        case 'B':
-                            //drawBigNote(ctx, ridx, nBeat, '#43c8ff');
-							drawNoteSprite(ctx, ridx, nBeat, 'bigKat');
-                            break;
+							case '4':
+							case 'B':
+								//drawBigNote(ctx, ridx, nBeat, '#43c8ff');
+								drawNoteSprite(ctx, ridx, rowYDelta, nBeat, 'bigKat');
+								break;
 
-                        case '5':
-                            //drawRendaSmall(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1]);
-							drawRendaSprite(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], 'roll');
-                            longEnd = false;
-                            break;
+							case '5':
+								//drawRendaSmall(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1]);
+								drawRendaSprite(ctx, rows, bt, ridx, nBeat, longEnd[0], longEnd[1], 'roll');
+								longEnd = false;
+								break;
 
-                        case '6':
-                            //drawRendaBig(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1]);
-							drawRendaSprite(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], 'bigRoll');
-                            longEnd = false;
-                            break;
+							case '6':
+								//drawRendaBig(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1]);
+								drawRendaSprite(ctx, rows, bt, ridx, nBeat, longEnd[0], longEnd[1], 'bigRoll');
+								longEnd = false;
+								break;
 
-                        case '7':
-                            balloonCount = course.headers.balloon[balloonIdx - 1];
+							case '7':
+								balloonCount = course.headers.balloon[bt][balloonIdx - 1];
 
-							//drawBalloon(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], balloonCount);
-                            drawBalloonSprite(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], balloonCount);
-                            balloonIdx -= 1;
-                            longEnd = false;
-                            break;
+								//drawBalloon(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], balloonCount);
+								drawBalloonSprite(ctx, rows, bt, ridx, nBeat, longEnd[0], longEnd[1], balloonCount);
+								balloonIdx -= 1;
+								longEnd = false;
+								break;
 
-                        case '8':
-                            longEnd = [ridx, nBeat];
-                            break;
+							case '8':
+								longEnd = [ridx, nBeat];
+								break;
 
-                        case '9':
-							balloonCount = course.headers.balloon[balloonIdx - 1];
-							
-							//drawBalloon(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], balloonCount, true);
-							drawBalloonSprite(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], balloonCount, true, chart.headers.spRoll);
-                            balloonIdx -= 1;
-                            longEnd = false;
-                            break;
+							case '9':
+								balloonCount = course.headers.balloon[bt][balloonIdx - 1];
+								
+								//drawBalloon(ctx, rows, ridx, nBeat, longEnd[0], longEnd[1], balloonCount, true);
+								drawBalloonSprite(ctx, rows, bt, ridx, nBeat, longEnd[0], longEnd[1], balloonCount, true, chart.headers.spRoll);
+								balloonIdx -= 1;
+								longEnd = false;
+								break;
 
-                        case 'C':
-                            //drawSmallNote(ctx, ridx, nBeat, '#093e74');
-							drawNoteSprite(ctx, ridx, nBeat, 'bomb');
-                            break;
+							case 'C':
+								//drawSmallNote(ctx, ridx, nBeat, '#093e74');
+								drawNoteSprite(ctx, ridx, rowYDelta, nBeat, 'bomb');
+								break;
 
-                        case 'F':
-                            //drawSmallNote(ctx, ridx, nBeat, '#ddd');
-							drawNoteSprite(ctx, ridx, nBeat, 'adlib');
-                            break;
+							case 'F':
+								//drawSmallNote(ctx, ridx, nBeat, '#ddd');
+								drawNoteSprite(ctx, ridx, rowYDelta, nBeat, 'adlib');
+								break;
 
-                        case 'G':
-                            //drawBigNote(ctx, ridx, nBeat, '#f3f');
-							drawNoteSprite(ctx, ridx, nBeat, 'purple');
-                            break;
-                    }
-                }
-            }
-        }
+							case 'G':
+								//drawBigNote(ctx, ridx, nBeat, '#f3f');
+								drawNoteSprite(ctx, ridx, rowYDelta, nBeat, 'purple');
+								break;
+						}
+					}
+				}
+			}
+		}
 
         //document.body.removeChild($canvas);
         return $canvas;

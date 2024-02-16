@@ -7,19 +7,20 @@
     <body>
         <section class="pane-left">
             <div class="area is-titled area-editor">
-                <h2 class="title">Editor (Drag and drop .tja file)</h2>
+                <h2 class="title">エディタ (tjaファイルをドラッグ＆ドロップしてください)</h2>
                 <div class="controls">
                     <div style="float:left">
-                        <label>Encoding: </label>
-                        <label><input id="charset-auto" type="radio" name="charset" checked>Auto</label>
+                        <label>文字コード: </label>
+                        <label><input id="charset-auto" type="radio" name="charset" checked>自動認識</label>
                         <label><input id="charset-utf-8" type="radio" name="charset">UTF-8</label>
                         <label><input id="charset-shift-jis" type="radio" name="charset">Shift-JIS</label>
                         <label><input id="charset-gb18030" type="radio" name="charset">GB18030</label>
-                        <label><input id="editor-live" type="checkbox" checked>Enable live-editing</label>
-                        <label><input id="auto-scroll-to-bottom" type="checkbox">Auto scroll-to-bottom</label>
+                        <label><input id="editor-live" type="checkbox" checked>自動反映を有効にする</label>
+                        <label><input id="auto-scroll-to-bottom" type="checkbox">下へ自動スクロールする</label>
+						<label><input id="embed-donscore" type="checkbox" checked>どんすこあ構文を埋め込む</label>
                     </div>
                     <div style="float:right">
-                        <button class="editor-process">Process</button>
+                        <button class="editor-process">反映</button>
                     </div>
                 </div>
                 <div class="content">
@@ -57,6 +58,11 @@
                 <div class="page page-preview"></div>
                 <div class="page page-statistics">
                     <h3>統計</h3>
+					<div class="controls-branch">
+						<span class="button btn-branch-n is-hidden" data-value='N'>普通</span>
+						<span class="button btn-branch-e is-hidden" data-value='E'>玄人</span>
+						<span class="button btn-branch-m is-hidden" data-value='M'>達人</span>
+					</div>
                     <h4>最大コンボ数</h4>
                     <p><code class="stat-total-combo"></code></p>
                     <h4>天井点</h4>

@@ -224,4 +224,40 @@ body {
 	.renda-head {
 		display: flex;
 	}
+
+	.renda-text-copy {
+		width: 4.5m;
+		height: 2em;
+		margin-top: 1.1em;
+		margin-left: 1em;
+	}
+
+    .button {
+        padding: 2px 4px;
+        background: #fafafa;
+        border: 1px solid #aaa;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:hover {
+            background: #f6f6f6;
+        }
+
+        &.is-active {
+            font-weight: bold;
+            background: #eee;
+        }
+		
+		&.btn-branch-n {
+            color: #666;
+        }
+		
+		&.btn-branch-e {
+            color: #069;
+        }
+		
+		&.btn-branch-m {
+            color: #909;
+        }
+    }
 }

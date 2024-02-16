@@ -7,9 +7,12 @@ import chardet from 'chardet';
 import iconv from 'iconv-lite';
 
 import parseTJA from './parseTJA';
+import { getCourseLines, getEnabledBranch } from './parseTJA';
 import drawChart from './drawChart';
 import { initUsedSprite } from './drawChart';
 import analyseChart from './analyseChart';
+import { embedText } from './embedChart';
+import { convertToDonscore } from './donscore';
 
 import '../css/style.scss';
 import '../css/Pixel-3x5.css';
@@ -21,6 +24,7 @@ const $charsetShiftjis = $('#charset-shift-jis').first();
 const $charsetGb18030 = $('#charset-gb18030').first();
 const $editorLive = $('#editor-live').first();
 const $autoScrollToBottom = $('#auto-scroll-to-bottom').first();
+const $embedDonscore = $('#embed-donscore').first();
 const $editorProcess = $('.editor-process');
 const $input = $('.area-editor .input');
 const $errors = $('.area-errors .errors');
@@ -28,6 +32,7 @@ const $rendaHead = $('.renda-head');
 
 let tjaParsed = null;
 let selectedDifficulty = '';
+let selectedBranch = 'N';
 let selectedPage = 'preview';
 
 function displayErrors(message) {
@@ -48,6 +53,9 @@ function updateUI() {
     else hidePreview();
 
     if (selectedPage === 'statistics') showStatistics();
+	
+    $('.controls-branch .button.is-active').removeClass('is-active');
+    $(`.controls-branch .btn-branch-${selectedBranch.toLowerCase()}`).addClass('is-active');
 }
 
 function processTJA() {
@@ -72,13 +80,13 @@ function showPreview() {
     $('#tja-preview').remove();
 	
 	let fontPromises = []
-	if (tjaParsed.headers.font === 'nijiiro' || tjaParsed.headers.font === 'Nijiiro') {
-		fontPromises.push(document.fonts.load('bold 28px "nijiiro"'));
-		fontPromises.push(document.fonts.load('bold 17px "nijiiro"'));
+	if (tjaParsed.headers.font.toLowerCase() === 'nijiiro') {
+		fontPromises.push(document.fonts.load('bold 24px "Nijiiro"'));
+		fontPromises.push(document.fonts.load('bold 17px "Nijiiro"'));
 	}
-	else if (tjaParsed.headers.font === 'beforeArcade' || tjaParsed.headers.font === 'BeforeArcade') {
-		fontPromises.push(document.fonts.load('bold 28px "beforeArcade"'));
-		fontPromises.push(document.fonts.load('bold 17px "beforeArcade"'));
+	else if (tjaParsed.headers.font.toLowerCase() === 'beforenijiiro') {
+		fontPromises.push(document.fonts.load('bold 24px "BeforeNijiiro"'));
+		fontPromises.push(document.fonts.load('bold 17px "BeforeNijiiro"'));
 	}
 	else {
 		fontPromises.push(document.fonts.load('5px "Pixel 3x5"'));
@@ -89,8 +97,15 @@ function showPreview() {
             const $canvas = drawChart(tjaParsed, selectedDifficulty);
 			const $img =  document.createElement('img');
             $img.id =  'tja-preview';
-			$img.src =  $canvas.toDataURL();
-            $('.page-preview').append($img);
+			
+			if ($embedDonscore.checked) {
+				$img.src = embedText($canvas.toDataURL(), convertToDonscore(tjaParsed, selectedDifficulty));
+			}
+			else {
+				$img.src = embedText($canvas.toDataURL(), getCourseLines($input.first().value, selectedDifficulty));
+			}
+            
+			$('.page-preview').append($img);
 
             displayErrors('No error');
         } catch (e) {
@@ -107,8 +122,15 @@ function hidePreview() {
 function showStatistics() {
     if (selectedDifficulty === '') return;
 
+	const enabledBranch = getEnabledBranch(tjaParsed, selectedDifficulty);
+
+	$('.controls-branch .button').addClass('is-hidden');
+	for (let branch of enabledBranch) {
+		$(`.controls-branch .btn-branch-${branch.toLowerCase()}`).removeClass('is-hidden');
+	}
+
     try {
-        const data = analyseChart(tjaParsed, selectedDifficulty);
+        const data = analyseChart(tjaParsed, selectedDifficulty, selectedBranch);
         buildStatisticsPage(data);
     } catch (e) {
         console.error(e);
@@ -162,7 +184,7 @@ function buildStatisticsPage(data) {
 	for (let i = 0; i < course.measures.length; i++) {
 		for (let j = 0; j < course.measures[i].events.length; j++) {
 			if (course.measures[i].events[j].name === 'bpm') {
-				let curBpm = course.measures[i].events[j].value;
+				let curBpm = parseFloat(course.measures[i].events[j].value);
 				
 				if (firstBpm) {
 					bpmMin = curBpm;
@@ -300,7 +322,7 @@ function copyRendaText(rendas, rendaExtends) {
 	}
 	
 	if (result != '') {
-		navigator.clipboard.writeText('-連打秒数目安・・・' + result);
+		navigator.clipboard.writeText(result);
 	}
 }
 
@@ -314,7 +336,7 @@ $editorProcess.on('click', () => {
 $rendaHead.on('click', () => {
 	if (selectedDifficulty === '') return;
 	
-    const data = analyseChart(tjaParsed, selectedDifficulty);
+    const data = analyseChart(tjaParsed, selectedDifficulty, selectedBranch);
 	const { statistics: stats, graph } = data;
 	copyRendaText(stats.rendas, stats.rendaExtends);
 });
@@ -378,6 +400,17 @@ $('.controls-diff .button').on('click', evt => {
     const diff = $(evt.target).data('value');
 
     selectedDifficulty = diff;
+	
+	const enabledBranch = getEnabledBranch(tjaParsed, selectedDifficulty);
+	selectedBranch = enabledBranch[enabledBranch.length - 1];
+	
+    updateUI();
+});
+
+$('.controls-branch .button').on('click', evt => {
+    const branch = $(evt.target).data('value');
+
+    selectedBranch = branch;
     updateUI();
 });
 

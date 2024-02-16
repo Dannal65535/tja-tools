@@ -15,7 +15,7 @@ function pulseToTime(events, objects) {
 
                 passedBeat += beat;
                 passedTime += time;
-                bpm = event.value;
+                bpm = parseFloat(event.value);
             }
 
             eidx++;
@@ -34,17 +34,99 @@ function pulseToTime(events, objects) {
     return times;
 }
 
-function convertToTimed(course) {
+function convertToTimed(course, branchType) {
     const events = [], notes = [];
     let beat = 0, balloon = 0, imo = false;
-
+	
+	// Get Branch Data
+	let newData = [];
+	let newBalloon = [];
+	const branchTypes = ['N','E','M'];
+	let allBalloon = {'N':{},'E':{},'M':{}};
+	for (let bt of branchTypes) {
+		let tempCount = 0;
+		for (let i = 0; i < course.measures.length; i++) {
+			if (course.measures[i].data[bt] === null) {
+				continue;
+			}
+			let tempBalloon = {};
+			for (let j = 0; j < course.measures[i].data[bt].length; j++) {
+				const ch = course.measures[i].data[bt].charAt(j);
+				if (ch === '7' || ch === '9') {
+					tempBalloon[j.toString()] = course.headers.balloon[bt][tempCount++];
+				}
+			}
+			allBalloon[bt][i.toString()] = tempBalloon;
+		}
+	}
+	
+	for (let i = 0; i < course.measures.length; i++) {
+		let selected = branchType;
+		let selData = '';
+		const measure = course.measures[i];
+		
+		switch (branchType) {
+			case 'N':
+				if (measure.data['N'] != null) {
+					selected = 'N';
+					selData = measure.data['N'];
+				}
+				else if (measure.data['E'] != null) {
+					selected = 'E';
+					selData = measure.data['E'];
+				}
+				else if (measure.data['M'] != null) {
+					selected = 'M';
+					selData = measure.data['M'];
+				}
+				break;
+			case 'E':
+				if (measure.data['E'] != null) {
+					selected = 'E';
+					selData = measure.data['E'];
+				}
+				else if (measure.data['N'] != null) {
+					selected = 'N';
+					selData = measure.data['N'];
+				}
+				else if (measure.data['M'] != null) {
+					selected = 'M';
+					selData = measure.data['M'];
+				}
+				break;
+			case 'M':
+				if (measure.data['M'] != null) {
+					selected = 'M';
+					selData = measure.data['M'];
+				}
+				else if (measure.data['E'] != null) {
+					selected = 'E';
+					selData = measure.data['E'];
+				}
+				else if (measure.data['N'] != null) {
+					selected = 'N';
+					selData = measure.data['N'];
+				}
+				break;
+		}
+		
+		for (let j = 0; j < selData.length; j++) {
+			const ch = selData.charAt(j);
+			if (ch === '7' || ch === '9') {
+				newBalloon.push(allBalloon[selected][i.toString()][j.toString()]);
+			}
+		}
+		newData.push(selData);
+	}
+	
+	// Analyze Events
     for (let m = 0; m < course.measures.length; m++) {
         const measure = course.measures[m];
         const length = measure.length[0] / measure.length[1] * 4;
 
         for (let e = 0; e < measure.events.length; e++) {
             const event = measure.events[e];
-            const eBeat = length / (measure.data.length || 1) * event.position;
+            const eBeat = length / (measure.data['N'].length || 1) * event.position;
 
             if (event.name === 'bpm') {
                 events.push({
@@ -66,10 +148,11 @@ function convertToTimed(course) {
                 });
             }
         }
-
-        for (let d = 0; d < measure.data.length; d++) {
-            const ch = measure.data.charAt(d);
-            const nBeat = length / measure.data.length * d;
+		
+		// Analyze Notes
+        for (let d = 0; d < newData[m].length; d++) {
+            const ch = newData[m].charAt(d);
+            const nBeat = length / newData[m].length * d;
 
             let note = { type: '', beat: beat + nBeat };
 
@@ -102,7 +185,7 @@ function convertToTimed(course) {
 
                 case '7':
                     note.type = 'balloon';
-                    note.count = course.headers.balloon[balloon++];
+                    note.count = newBalloon[balloon++];
                     break;
 
                 case '8':
@@ -113,7 +196,7 @@ function convertToTimed(course) {
                 case '9':
                     if (imo === false) {
                         note.type = 'balloon';
-                        note.count = course.headers.balloon[balloon++];
+                        note.count = newBalloon[balloon++];
                         imo = true;
                     }
                     break;
@@ -286,9 +369,9 @@ function getGraph(course) {
     return { timeframe, max, data };
 }
 
-export default function (chart, courseId) {
+export default function (chart, courseId, branchType) {
     const course = chart.courses[courseId];
-    const converted = convertToTimed(course);
+    const converted = convertToTimed(course, branchType);
 
     const statistics = getStatistics(converted);
     const graph = getGraph(converted);
