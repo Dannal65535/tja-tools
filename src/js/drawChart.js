@@ -819,7 +819,12 @@ export default function (chart, courseId) {
 								break;
 
 							case '8':
-								longEnd = [ridx, nBeat];
+								if (ridx > 0 && nBeat === 0) {
+									longEnd = [ridx - 1, rows[ridx - 1].beats];
+								}
+								else {
+									longEnd = [ridx, nBeat];
+								}
 								break;
 
 							case '9':
