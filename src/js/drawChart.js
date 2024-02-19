@@ -495,8 +495,8 @@ export default function (chart, courseId) {
 			drawText(ctx, 8, 40, difficultyText, 'bold 17px "BeforeNijiiro"', levelTextColor, 'top', 'left');
 		}
 		else {
-			drawText(ctx, 11, 9, fixedTitle, 'bold 20px MS UI Gothic', titleTextColor, 'top', 'left');
-			drawText(ctx, 10, 39, difficultyText, 'bold 17px MS UI Gothic', levelTextColor, 'top', 'left');
+			drawText(ctx, 11, 9, fixedTitle, 'bold 20px Arial, MS UI Gothic', titleTextColor, 'top', 'left');
+			drawText(ctx, 10, 39, difficultyText, 'bold 17px Arial, MS UI Gothic', levelTextColor, 'top', 'left');
 		}
 
         //============================================================================
