@@ -107,12 +107,14 @@ function drawLong(ctx, rows, sRow, sBeat, eRow, eBeat, color, type = 'body') {
     ey -= yDelta;
 
     const h = isGogo ? ROW_HEIGHT_INFO : (NOTE_RADIUS * 2 + (isBig ? 6 : 0));
-
+	
+	const startOffset = sBeat === 0 ? 24 : 0;
+	
     if (sRow === eRow) {
         const w = ex - sx;
 
         if (isGogo) {
-            drawRect(ctx, sx, sy, w, h, color);
+            drawRect(ctx, sx - startOffset, sy, w + startOffset, h, color);
         }
         else {
             drawRect(ctx, sx, sy, w, h, '#000');
@@ -126,7 +128,6 @@ function drawLong(ctx, rows, sRow, sBeat, eRow, eBeat, color, type = 'body') {
             sw = GET_BEAT_X(endOfStartRow) - sx + ROW_TRAILING;
 
         if (isGogo) {
-			const startOffset = sBeat === 0 ? 24 : 0;
             drawRect(ctx, sx - startOffset, sy, sw + startOffset, h, color);
         }
         else {
