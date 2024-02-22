@@ -101,6 +101,7 @@ export function convertToDonscore(chart, courseId) {
 		}
 	}
 	
+	/*
 	for (let bt of branchTypes) {
 		for (let i = 0; i < newData.length; i++) {
 			if (newData[i][bt] === null) {
@@ -112,6 +113,7 @@ export function convertToDonscore(chart, courseId) {
 			}
 		}
 	}
+	*/
 	
 	// Fix Events Position
 	for (let i = 0; i < course.measures.length; i++) {
@@ -291,16 +293,16 @@ export function convertToDonscore(chart, courseId) {
 			result.push('#newline');
 		}
 		
-		// BeatChar
-		let nowBeatChar = converted[m][nowBranch[0]].length / measure.length[0];
-		if (preBeatChar != nowBeatChar) {
-			result.push(`#beatchar ${nowBeatChar}`);
-		}
-		
 		// Meter
 		let nowMeter = [measure.length[1], measure.length[0]];
 		if (!compareArray(preMeter, nowMeter)) {
 			result.push(`#meter ${nowMeter[0]} ${nowMeter[1]}`);
+		}
+		
+		// BeatChar
+		let nowBeatChar = converted[m][nowBranch[0]].length / measure.length[0];
+		if (preBeatChar != nowBeatChar) {
+			result.push(`#beatchar ${nowBeatChar}`);
 		}
 		
 		// Events
