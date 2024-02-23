@@ -306,42 +306,44 @@ export function convertToDonscore(chart, courseId) {
 		// Events
 		for (let i = 0; i < newEvent[m].length; i++) {
 			const event = newEvent[m][i];
-			const splitNum = converted[m][nowBranch[0]].length / measure.length[0] * (measure.length[1] / 4);
+			const fixedMeasure = lcm(measure.length[1], 4);
+			const fixedPosition = event.position * (fixedMeasure / measure.length[1]);
+			const splitNum = converted[m][nowBranch[0]].length / measure.length[0] * (fixedMeasure / 4);
 			let eventText = '';
 			
 			switch (event.name) {
 				case 'gogoStart':
 					eventText = '#begingogo';
 					if (event.position > 0) {
-						eventText += ` ${splitNum} ${event.position}`;
+						eventText += ` ${splitNum} ${fixedPosition}`;
 					}
 					result.push(eventText);
 					break;
 				case 'gogoEnd':
 					eventText = '#endgogo';
 					if (event.position > 0) {
-						eventText += ` ${splitNum} ${event.position}`;
+						eventText += ` ${splitNum} ${fixedPosition}`;
 					}
 					result.push(eventText);
 					break;
 				case 'barlineon':
 					eventText = '#barlineon';
 					if (event.position > 0) {
-						eventText += ` ${splitNum} ${event.position}`;
+						eventText += ` ${splitNum} ${fixedPosition}`;
 					}
 					result.push(eventText);
 					break;
 				case 'barlineoff':
 					eventText = '#barlineoff';
 					if (event.position > 0) {
-						eventText += ` ${splitNum} ${event.position}`;
+						eventText += ` ${splitNum} ${fixedPosition}`;
 					}
 					result.push(eventText);
 					break;
 				case 'bpm':
 					eventText = `#bpm ${event.value}`;
 					if (event.position > 0) {
-						eventText += ` ${splitNum} ${event.position}`;
+						eventText += ` ${splitNum} ${fixedPosition}`;
 					}
 					result.push(eventText);
 					break;
@@ -369,7 +371,7 @@ export function convertToDonscore(chart, courseId) {
 					for (let sTemp of scrollsTemp) {
 						let eventText = `#hs ${sTemp.value}`;
 						if (event.position > 0) {
-							eventText += ` ${splitNum} ${event.position}`;
+							eventText += ` ${splitNum} ${fixedPosition}`;
 						}
 						if (scrollsTemp.length != 1 || sTemp.branch.length != measure.dataNum) {
 							eventText += ' ';
