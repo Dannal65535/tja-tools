@@ -101,19 +101,17 @@ export function convertToDonscore(chart, courseId) {
 		}
 	}
 	
-	/*
 	for (let bt of branchTypes) {
 		for (let i = 0; i < newData.length; i++) {
 			if (newData[i][bt] === null) {
 				continue;
 			}
-			const dataLCM = lcm(newData[i][bt].length, course.measures[i].length[1]);
+			const dataLCM = lcm(newData[i][bt].length, course.measures[i].length[0]);
 			if (dataLCM > newData[i][bt].length) {
 				newData[i][bt] = addZero(newData[i][bt], dataLCM);
 			}
 		}
 	}
-	*/
 	
 	// Fix Events Position
 	for (let i = 0; i < course.measures.length; i++) {
