@@ -305,6 +305,9 @@ export function convertToDonscore(chart, courseId) {
 		
 		// Events
 		for (let i = 0; i < newEvent[m].length; i++) {
+			if (isNaN(newEvent[m][i].position)) {
+				continue;
+			}
 			const event = newEvent[m][i];
 			const fixedMeasure = lcm(measure.length[1], 4);
 			const fixedPosition = event.position * (fixedMeasure / measure.length[1]);

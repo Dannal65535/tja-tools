@@ -153,7 +153,10 @@ function drawLong(ctx, rows, sRow, sBeat, eRow, eBeat, color, type = 'body') {
         }
 
         // start-of-row to end
-        const ew = GET_BEAT_X(eBeat);
+        let ew = GET_BEAT_X(eBeat);
+		if (isNaN(eBeat)) {
+			ew = GET_BEAT_X(rows[eRow].totalBeat) + ROW_TRAILING;
+		}
 
         if (isGogo) {
 			const fixedew = eBeat === 0 ? 0 : ew;
@@ -225,13 +228,16 @@ function drawLongSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type) {
                 drawRect(ctx, 0, ry, rw, h, color);
             }
             else {
-                ry += ROW_OFFSET_NOTE_CENTER - NOTE_RADIUS - (isBig ? 3 : 0)
-				drawRectSprite(ctx, 24, ry, rw - 48, type)
+                ry += (rows[r].branch.indexOf(bt) * 24) + ROW_OFFSET_NOTE_CENTER - yDelta;
+				drawRectSprite(ctx, 24, ry, rw - 48, type);
             }
         }
 
         // start-of-row to end
-        const ew = GET_BEAT_X(eBeat);
+        let ew = GET_BEAT_X(eBeat);
+		if (isNaN(eBeat)) {
+			ew = GET_BEAT_X(rows[eRow].totalBeat);
+		}
 
         if (isGogo) {
 			const fixedew = eBeat === 0 ? 0 : ew;
@@ -265,7 +271,13 @@ function drawRendaSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type) {
 	if (eRow != undefined) {
 		drawNoteSprite(ctx, eRow, rows[eRow].branch.indexOf(bt) * 24, eBeat, type + 'End');
 	}
-	drawLongSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type + 'Middle');
+	let feRow = eRow;
+	let feBeat = eBeat;
+	if (eRow == undefined) {
+		feRow = rows.length - 1;
+		feBeat = rows[rows.length - 1].totalBeat;
+	}
+	drawLongSprite(ctx, rows, bt, sRow, sBeat, feRow, feBeat, type + 'Middle');
 	drawNoteSprite(ctx, sRow, rows[sRow].branch.indexOf(bt) * 24, sBeat, type + 'Start');
 }
 
