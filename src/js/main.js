@@ -79,40 +79,25 @@ function showPreview() {
 
     $('#tja-preview').remove();
 	
-	let fontPromises = []
-	if (tjaParsed.headers.font.toLowerCase() === 'nijiiro') {
-		fontPromises.push(document.fonts.load('bold 24px "Nijiiro"'));
-		fontPromises.push(document.fonts.load('bold 17px "Nijiiro"'));
-	}
-	else if (tjaParsed.headers.font.toLowerCase() === 'beforenijiiro') {
-		fontPromises.push(document.fonts.load('bold 24px "BeforeNijiiro"'));
-		fontPromises.push(document.fonts.load('bold 17px "BeforeNijiiro"'));
-	}
-	else {
-		fontPromises.push(document.fonts.load('5px "Pixel 3x5"'));
-	}
-	
-    Promise.all(fontPromises).then(() => {
-        try {
-            const $canvas = drawChart(tjaParsed, selectedDifficulty);
-			const $img =  document.createElement('img');
-            $img.id =  'tja-preview';
-			
-			if ($embedDonscore.checked) {
-				$img.src = embedText($canvas.toDataURL(), convertToDonscore(tjaParsed, selectedDifficulty));
-			}
-			else {
-				$img.src = embedText($canvas.toDataURL(), getCourseLines($input.first().value, selectedDifficulty));
-			}
-            
-			$('.page-preview').append($img);
+	try {
+		const $canvas = drawChart(tjaParsed, selectedDifficulty);
+		const $img =  document.createElement('img');
+		$img.id =  'tja-preview';
+		
+		if ($embedDonscore.checked) {
+			$img.src = embedText($canvas.toDataURL(), convertToDonscore(tjaParsed, selectedDifficulty));
+		}
+		else {
+			$img.src = embedText($canvas.toDataURL(), getCourseLines($input.first().value, selectedDifficulty));
+		}
+		
+		$('.page-preview').append($img);
 
-            displayErrors('No error');
-        } catch (e) {
-            console.error(e);
-            displayErrors(e.message);
-        }
-    });
+		displayErrors('No error');
+	} catch (e) {
+		console.error(e);
+		displayErrors(e.message);
+	}
 }
 
 function hidePreview() {
@@ -423,6 +408,14 @@ $('.controls-page .button').on('click', evt => {
 
 window.onload = async function() {
 	await initUsedSprite();
+	
+	let fontPromises = []
+	fontPromises.push(document.fonts.load('bold 24px "Nijiiro"'));
+	fontPromises.push(document.fonts.load('bold 17px "Nijiiro"'));
+	fontPromises.push(document.fonts.load('bold 24px "BeforeNijiiro"'));
+	fontPromises.push(document.fonts.load('bold 17px "BeforeNijiiro"'));
+	//fontPromises.push(document.fonts.load('5px "Pixel 3x5"'));
+	await Promise.all(fontPromises);
 }
 
 //==============================================================================
