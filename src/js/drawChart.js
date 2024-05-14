@@ -1,5 +1,6 @@
 import { drawLine, drawCircle, drawRect, drawText, drawPixelText, drawSprite, drawImageText, initSprites } from './canvasHelper';
 import { toFixedZero } from './main';
+import { callFontSetting, getUraSymbol } from './font';
 
 //==============================================================================
 // Drawing config and helpers
@@ -432,13 +433,9 @@ export default function (chart, courseId) {
 			drawRect(ctx, 0, y + ROW_HEIGHT_INFO + rowOffset + 4, rowWidth, 2, '#000');
         }
 		
-		let titleUraSymbol = '(裏譜面)';
-		let levelUraSymbol = '裏';
-		
-		if (chart.headers.font.toLowerCase() === 'beforenijiiro') {
-			titleUraSymbol = '─';
-			levelUraSymbol = '─';
-		}
+		let uraSymbols = getUraSymbol(chart.headers.font.toLowerCase());
+		let titleUraSymbol = uraSymbols.title;
+		let levelUraSymbol = uraSymbols.level;
 		
 		const fixedTitle = (course.course === 4 && chart.headers.levelUra != 1) ? chart.headers.title + titleUraSymbol : chart.headers.title;
 		
@@ -495,23 +492,11 @@ export default function (chart, courseId) {
 				break;
 		}
 		
-		if (chart.headers.font === 'sans-serif') {
-			drawText(ctx, 8, 8, fixedTitle, 'bold 20px sans-serif', titleTextColor, 'top', 'left');
-			drawText(ctx, 8, 40, difficultyText, 'bold 17px sans-serif', levelTextColor, 'top', 'left');
-		}
-		else if (chart.headers.font.toLowerCase() === 'nijiiro') {
-			drawText(ctx, 8, 8, fixedTitle, 'bold 24px "Nijiiro"', titleTextColor, 'top', 'left', true);
-			drawText(ctx, 8, 40, difficultyText, 'bold 17px "Nijiiro"', levelTextColor, 'top', 'left');
-		}
-		else if (chart.headers.font.toLowerCase() === 'beforenijiiro') {
-			drawText(ctx, 8, 8, fixedTitle, 'bold 24px "BeforeNijiiro"', titleTextColor, 'top', 'left', true);
-			drawText(ctx, 8, 40, difficultyText, 'bold 17px "BeforeNijiiro"', levelTextColor, 'top', 'left');
-		}
-		else {
-			drawText(ctx, 11, 10, fixedTitle, 'bold 21px Arial, MS UI Gothic', titleTextColor, 'top', 'left');
-			drawText(ctx, 10, 41, difficultyText, 'bold 17px Arial, MS UI Gothic', levelTextColor, 'top', 'left');
-		}
-
+		let fontSetting = callFontSetting(chart.headers.font.toLowerCase());
+		
+		drawText(ctx, fontSetting.x1, fontSetting.y1, fixedTitle, fontSetting.titleText, titleTextColor, 'top', 'left', fontSetting.stroke1);
+		drawText(ctx, fontSetting.x2, fontSetting.y2, difficultyText, fontSetting.subTitleText, levelTextColor, 'top', 'left', fontSetting.stroke2);
+		
         //============================================================================
         // 3. Go-go time, measure grid, events
 

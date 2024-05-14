@@ -14,6 +14,8 @@ import analyseChart from './analyseChart';
 import { embedText } from './embedChart';
 import { convertToDonscore } from './donscore';
 
+import { loadAllFonts } from './font';
+
 import '../css/style.scss';
 import '../css/Pixel-3x5.css';
 
@@ -408,14 +410,7 @@ $('.controls-page .button').on('click', evt => {
 
 window.onload = async function() {
 	await initUsedSprite();
-	
-	let fontPromises = []
-	fontPromises.push(document.fonts.load('bold 24px "Nijiiro"'));
-	fontPromises.push(document.fonts.load('bold 17px "Nijiiro"'));
-	fontPromises.push(document.fonts.load('bold 24px "BeforeNijiiro"'));
-	fontPromises.push(document.fonts.load('bold 17px "BeforeNijiiro"'));
-	//fontPromises.push(document.fonts.load('5px "Pixel 3x5"'));
-	await Promise.all(fontPromises);
+	await loadAllFonts();
 }
 
 //==============================================================================
