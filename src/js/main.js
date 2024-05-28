@@ -36,6 +36,8 @@ let tjaParsed = null;
 let selectedDifficulty = '';
 let selectedBranch = 'N';
 let selectedPage = 'preview';
+let selectedScoreSystem = 'CS';
+let selectedGogoFloor = 'AC15';
 
 function displayErrors(message) {
     $errors.text(message);
@@ -148,24 +150,77 @@ function buildStatisticsPage(data) {
     $('.stat-total-combo').text(stats.totalCombo);
 
     const course = tjaParsed.courses[selectedDifficulty];
-    const { scoreInit, scoreDiff } = course.headers;
+    const { scoreInit, scoreDiff, scoreShin } = course.headers;
+
+	$('.stat-level').text('★×' + course.headers.level);
 
     const drop1 = n => Math.floor(n / 10) * 10;
     const multipliers = [0, 1, 2, 4, 8];
-    const noteScores = multipliers.map(m => drop1(scoreInit + scoreDiff * m));
-    const noteGogoScores = noteScores.map(s => drop1(s * 1.2));
-    const statPotential = (
-        noteScores.map((s, i) => stats.score.notes[0][i] * s).reduce((p, c) => p + c, 0) +
-        noteGogoScores.map((s, i) => stats.score.notes[1][i] * s).reduce((p, c) => p + c, 0) +
-        stats.score.balloon[0] * 300 +
-        stats.score.balloon[1] * 360 +
-        stats.score.balloonPop[0] * 5000 +
-        stats.score.balloonPop[1] * 6000 +
-        Math.floor(stats.totalCombo / 100) * 10000
-    );
+	const noteScores = multipliers.map(m => drop1(scoreInit + scoreDiff * m));
+	const noteScores2 = multipliers.map(m => (scoreInit + scoreDiff * m));
+	const noteScoresShin = multipliers.map(m => scoreShin);
+	
+	let noteGogoScores;
+	if (selectedGogoFloor === 'AC15') {
+		noteGogoScores = noteScores.map(s => drop1(s * 1.2));
+	}
+    else {
+		noteGogoScores = noteScores2.map(s => drop1(s * 1.2));
+	}
+	
+	let statPotential;
+	let statPotential2;
+	if (selectedScoreSystem != 'AC16New') {
+		statPotential = (
+			noteScores.map((s, i) => stats.score.notes[0][i] * s).reduce((p, c) => p + c, 0) +
+			noteGogoScores.map((s, i) => stats.score.notes[1][i] * s).reduce((p, c) => p + c, 0) +
+			stats.score.balloon[0] * 300 +
+			stats.score.balloon[1] * 360 +
+			stats.score.balloonPop[0] * 5000 +
+			stats.score.balloonPop[1] * 6000 +
+			Math.floor(stats.totalCombo / 100) * 10000
+		);
+		if (scoreShin != null) {
+			if (selectedScoreSystem === 'CS') {
+				statPotential2 = ((stats.totalCombo + (stats.notes[2] + stats.notes[3])) * scoreShin) +
+								 (stats.score.balloon[0] * 300) +
+								 (stats.score.balloon[1] * 300) +
+								 (stats.score.balloonPop[0] * 5000) +
+								 (stats.score.balloonPop[1] * 5000);
+			}
+			else if (selectedScoreSystem === 'AC16Old') {
+				statPotential2 = (stats.totalCombo * scoreShin) +
+								 (stats.score.balloon[0] * 100) +
+								 (stats.score.balloon[1] * 100) +
+								 (stats.score.balloonPop[0] * 100) +
+								 (stats.score.balloonPop[1] * 100);
+			}
+		}
+	}
+	else {
+		statPotential = (stats.totalCombo * scoreInit) +
+						(stats.score.balloon[0] * 100) +
+						(stats.score.balloon[1] * 100) +
+						(stats.score.balloonPop[0] * 100) +
+						(stats.score.balloonPop[1] * 100);
+	}
 
-    if (stats.rendas.length) $('.stat-max-score').text(`${statPotential} 点 + 連打`);
-    else $('.stat-max-score').text(`${statPotential} 点`);
+	if (selectedScoreSystem != 'AC16New') {
+		if (stats.rendas.length) $('.stat-max-score').text(`${scoreInit}点, ${scoreDiff}点 => ${statPotential}点 + 連打`);
+		else $('.stat-max-score').text(`${scoreInit}点, ${scoreDiff}点 => ${statPotential}点`);
+		if (scoreShin != null) {
+			if (stats.rendas.length) $('.stat-max-score2').text(`${scoreShin}点 => ${statPotential2}点 + 連打`);
+			else $('.stat-max-score2').text(`${scoreShin}点 => ${statPotential2}点`);
+		}
+		else {
+			$('.stat-max-score2').text('');
+		}
+	}
+	else {
+		if (stats.rendas.length) $('.stat-max-score').text(`${scoreInit}点 => ${statPotential}点 + 連打`);
+		else $('.stat-max-score').text(`${scoreInit}点 => ${statPotential}点`);
+		$('.stat-max-score2').text('');
+	}
 	
 	let bpmMin = 0, bpmMax = 0, firstBpm = true;
 	for (let i = 0; i < course.measures.length; i++) {
@@ -405,6 +460,20 @@ $('.controls-page .button').on('click', evt => {
     const page = $(evt.target).data('value');
 
     selectedPage = page;
+    updateUI();
+});
+
+$('.controls-score-system .radio').on('click', evt => {
+    const name = evt.target.name;
+	const value = evt.target.value;
+	
+	if (name === 'scoreSystem') {
+		selectedScoreSystem = value;
+	}
+	else {
+		selectedGogoFloor = value;
+	}
+	
     updateUI();
 });
 

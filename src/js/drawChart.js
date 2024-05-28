@@ -507,6 +507,7 @@ export default function (chart, courseId) {
 		let moveEvent = 0;
 		let moveEventTemp;
 		let sectionTemp = false;
+		let avoidText = false;
 
         for (let ridx = 0; ridx < rows.length; ridx++) {
             const row = rows[ridx], measures = row.measures;
@@ -539,6 +540,7 @@ export default function (chart, courseId) {
         for (let ridx = 0; ridx < rows.length; ridx++) {
             const row = rows[ridx], measures = row.measures;
             let beat = 0;
+			let eventCover = [];
 
             const y = GET_ROW_Y(ridx) + sumNums(rowDeltas, ridx);
 
@@ -616,7 +618,7 @@ export default function (chart, courseId) {
 						}
 						
 						if (barlineTemp || event.position > 0) {
-							drawLine(ctx, ex, y + moveEvent - ((scrollsTemp.length - 1) * 6), ex, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#444');
+							drawLine(ctx, ex, y + moveEvent - ((scrollsTemp.length - 1) * 6), ex, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#444', eventCover, avoidText);
 						}
                         //drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 13, 'HS ' + toFixedZero(event.value.toFixed(2)), '#f00', 'bottom', 'left');
 						
@@ -640,28 +642,47 @@ export default function (chart, courseId) {
 
 							scrollText += 'HS' + toFixedZero(parseFloat(sTemp.value).toFixed(2));
 							drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6), scrollText, 'hs');
+							eventCover.push({
+								stx:ex, sty:y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6),
+								enx:ex + (6 * scrollText.length) - 1, eny:y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6) + 5,
+							});
 							scrollCount++;
 						}
                     }
                     else if (event.name === 'bpm') {
 						if (barlineTemp || event.position > 0) {
-							drawLine(ctx, ex, y + moveEvent, ex, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#444');
+							drawLine(ctx, ex, y + moveEvent, ex, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#444', eventCover, avoidText);
 						}
                         //drawPixelText(ctx, ex + 2, y + ROW_HEIGHT_INFO - 7, 'BPM ' + toFixedZero(event.value.toFixed(2)), '#00f', 'bottom', 'left');
-						drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 12 + moveEvent, 'BPM' + toFixedZero(parseFloat(event.value).toFixed(2)), 'bpm');
+						
+						let bpmText = 'BPM' + toFixedZero(parseFloat(event.value).toFixed(2));
+						drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 12 + moveEvent, bpmText, 'bpm');
+						eventCover.push({
+							stx:ex, sty:y + ROW_HEIGHT_INFO - 12 + moveEvent,
+							enx:ex + (6 * bpmText.length) - 1, eny:y + ROW_HEIGHT_INFO - 12 + moveEvent + 5,
+						});
                     }
 					else if (event.name === 'moveEvent') {
 						moveEvent = isNaN(event.value) ? moveEvent : event.value;
+					}
+					else if (event.name === 'countChange') {
+						measureNumber = isNaN(event.value) ? measureNumber : event.value;
+					}
+					else if (event.name === 'avoidtexton') {
+						avoidText = true;
+					}
+					else if (event.name === 'avoidtextoff') {
+						avoidText = false;
 					}
                 }
 
                 // Measure lines, number
 				const firstLineColor = sectionTemp ? '#ffe400' : '#fff';
 				if (barlineTemp) {
-					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT + rowDeltas[ridx], 2, firstLineColor);
+					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT + rowDeltas[ridx], 2, firstLineColor, eventCover, avoidText);
 				}
 				else if (sectionTemp) {
-					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT_INFO, 2, firstLineColor);
+					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT_INFO, 2, firstLineColor, eventCover, avoidText);
 				}
                 //drawPixelText(ctx, mx + 2, y + ROW_HEIGHT_INFO - 1, measureNumber.toString(), '#000', 'bottom', 'left');
 				drawImageText(ctx, mx, y + ROW_HEIGHT_INFO - 6, measureNumber.toString(), 'num');
@@ -709,7 +730,7 @@ export default function (chart, courseId) {
 				if (barlineTemp) {
 					if (midx + 1 === measures.length) {
 						const mx2 = GET_BEAT_X(beat);
-						drawLine(ctx, mx2, y, mx2, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#fff');
+						drawLine(ctx, mx2, y, mx2, y + ROW_HEIGHT + rowDeltas[ridx], 2, '#fff', eventCover, avoidText);
 					}
 				}
                 
@@ -765,7 +786,7 @@ export default function (chart, courseId) {
 				const rowYDelta = row.branch.indexOf(bt) * 24;
 
 				for (let midx = measures.length - 1; midx >= 0; midx--) {
-					const measure = measures[midx], mBeat = measure.length[0] / measure.length[1] * 4;
+					const measure = measures[midx], mBeat = measure.lengthNotes[0] / measure.lengthNotes[1] * 4;
 
 					for (let didx = measure.data[bt].length; didx >= 0; didx--) {
 						const note = measure.data[bt].charAt(didx);

@@ -61,6 +61,9 @@
                 <div class="page page-preview"></div>
                 <div class="page page-statistics">
                     <h3>統計</h3>
+                    <h4>難易度</h4>
+                    <p><code class="stat-level"></code></p>
+					<h4>分岐</h4>
 					<div class="controls-branch">
 						<span class="button btn-branch-n is-hidden" data-value='N'>普通</span>
 						<span class="button btn-branch-e is-hidden" data-value='E'>玄人</span>
@@ -68,8 +71,20 @@
 					</div>
                     <h4>最大コンボ数</h4>
                     <p><code class="stat-total-combo"></code></p>
-                    <h4>天井点</h4>
+                    <h4>配点</h4>
+					<div class="controls-score-system">
+					<p>
+					<input type="radio" class="radio" name="scoreSystem" value="CS" checked>AC15+真打
+					<input type="radio" class="radio" name="scoreSystem" value="AC16Old">AC15+AC16
+					<input type="radio" class="radio" name="scoreSystem" value="AC16New">AC16
+					</p>
+					<p>
+					<input type="radio" class="radio" name="gogoFloor" value="AC15" checked>AC15
+					<input type="radio" class="radio" name="gogoFloor" value="RC">RC
+					</p>
+					</div>
                     <p><code class="stat-max-score"></code></p>
+					<p><code class="stat-max-score2"></code></p>
 					<h4>BPM</h4>
                     <p><code class="stat-bpm"></code></p>
                     <h4>ノーツの割合</h4>

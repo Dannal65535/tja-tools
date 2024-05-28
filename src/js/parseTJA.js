@@ -53,6 +53,9 @@ function parseLine(line) {
         'TTBREAK',
 		'NEWLINE',
 		'MOVEEVENT',
+		'COUNTCHANGE',
+		'AVOIDTEXTOFF',
+		'AVOIDTEXTON',
     ];
 
     let match;
@@ -117,8 +120,9 @@ function getCourse(tjaHeaders, lines) {
         course: 'Oni',
         level: 0,
         balloon: {'N':[],'E':[],'M':[]},
-        scoreInit: 100,
-        scoreDiff: 100,
+        scoreInit: 0,
+        scoreDiff: 0,
+		scoreShin: null,
 
         ttRowBeat: 16,
     };
@@ -127,6 +131,7 @@ function getCourse(tjaHeaders, lines) {
 
     // Process lines
     let measureDividend = 4, measureDivisor = 4;
+	let measureDividendNotes = 4, measureDivisorNotes = 4;
     let measureProperties = {}, measureData = '', measureEvents = [];
     let currentBranch = 'N';
     let targetBranch = 'N';
@@ -190,7 +195,19 @@ function getCourse(tjaHeaders, lines) {
                     break;
 
                 case 'SCOREINIT':
-                    headers.scoreInit = parseInt(line.value, 10);
+					let inits = line.value
+                        .split(/[^0-9]/)
+                        .filter(b => b !== '')
+                        .map(b => parseInt(b, 10));
+					
+					if (inits.length === 1) {
+						headers.scoreInit = inits[0];
+					}
+					else if (inits.length >= 2){
+						headers.scoreInit = inits[0];
+						headers.scoreShin = inits[1];
+					}
+                    //headers.scoreInit = parseInt(line.value, 10);
                     break;
 
                 case 'SCOREDIFF':
@@ -360,10 +377,22 @@ function getCourse(tjaHeaders, lines) {
                     switch (line.name) {
                         case 'MEASURE':
                             let matchMeasure = line.value.match(/(\d+)\/(\d+)/);
-                            if (!matchMeasure) break;
+							let matchMeasure2 = line.value.match(/(\d+)\/(\d+),\s*(\d+)\/(\d+)/);
+                            if (!matchMeasure && !matchMeasure2) break;
 
-                            measureDividend = parseInt(matchMeasure[1], 10);
-                            measureDivisor = parseInt(matchMeasure[2], 10);
+							if (matchMeasure2) {
+								measureDividend = parseInt(matchMeasure2[1], 10);
+								measureDivisor = parseInt(matchMeasure2[2], 10);
+								measureDividendNotes = parseInt(matchMeasure2[3], 10);
+								measureDivisorNotes = parseInt(matchMeasure2[4], 10);
+							}
+							else {
+								measureDividend = parseInt(matchMeasure[1], 10);
+								measureDivisor = parseInt(matchMeasure[2], 10);
+								measureDividendNotes = parseInt(matchMeasure[1], 10);
+								measureDivisorNotes = parseInt(matchMeasure[2], 10);
+							}
+							
                             break;
 
                         case 'GOGOSTART':
@@ -439,6 +468,35 @@ function getCourse(tjaHeaders, lines) {
                             });
                             break;
 
+						case 'COUNTCHANGE':
+                            measureEvents.push({
+                                name: 'countChange',
+                                position: measureData.length,
+                                value: parseInt(line.value),
+								branch: currentBranch,
+                            });
+                            break;
+
+                        case 'AVOIDTEXTON':
+                            measureEvents.push({
+                                name: 'avoidtexton',
+                                position: measureData.length,
+								branch: currentBranch,
+                            });
+                            break;
+
+                        case 'AVOIDTEXTOFF':
+                            measureEvents.push({
+                                name: 'avoidtextoff',
+                                position: measureData.length,
+								branch: currentBranch,
+                            });
+                            break;
+
+						case 'DELAY':
+                            measureProperties['delay'] = parseFloat(line.value);
+                            break;
+
 						case 'SECTION':
                             measureEvents.push({
                                 name: 'section',
@@ -496,6 +554,7 @@ function getCourse(tjaHeaders, lines) {
 
 					let measure = {
 						length: [measureDividend, measureDivisor],
+						lengthNotes: [measureDividendNotes, measureDivisorNotes],
 						properties: measureProperties,
 						data: measureDatas,
 						events: measureEvents,
@@ -571,6 +630,7 @@ function getCourse(tjaHeaders, lines) {
 		measureData = measureData === '' ? '0' : measureData;
         measures.push({
             length: [measureDividend, measureDivisor],
+			lengthNotes: [measureDividendNotes, measureDivisorNotes],
             properties: measureProperties,
             data: {N:measureData, E:null, M:null},
             events: measureEvents,
