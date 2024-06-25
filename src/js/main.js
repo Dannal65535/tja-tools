@@ -159,21 +159,27 @@ function buildStatisticsPage(data) {
 	const noteScores = multipliers.map(m => drop1(scoreInit + scoreDiff * m));
 	const noteScores2 = multipliers.map(m => (scoreInit + scoreDiff * m));
 	const noteScoresShin = multipliers.map(m => scoreShin);
+	const noteScoresBig = multipliers.map(m => drop1(scoreInit + scoreDiff * m) * 2);
 	
 	let noteGogoScores;
+	let noteGogoScoresBig;
 	if (selectedGogoFloor === 'AC15') {
 		noteGogoScores = noteScores.map(s => drop1(s * 1.2));
+		noteGogoScoresBig = noteScores.map(s => drop1(s * 1.2) * 2);
 	}
     else {
 		noteGogoScores = noteScores2.map(s => drop1(s * 1.2));
+		noteGogoScoresBig = noteScores2.map(s => drop1(s * 1.2) * 2);
 	}
 	
 	let statPotential;
 	let statPotential2;
 	if (selectedScoreSystem != 'AC16New') {
 		statPotential = (
-			noteScores.map((s, i) => stats.score.notes[0][i] * s).reduce((p, c) => p + c, 0) +
-			noteGogoScores.map((s, i) => stats.score.notes[1][i] * s).reduce((p, c) => p + c, 0) +
+			noteScores.map((s, i) => stats.score.notes[0][0][i] * s).reduce((p, c) => p + c, 0) +
+			noteGogoScores.map((s, i) => stats.score.notes[0][1][i] * s).reduce((p, c) => p + c, 0) +
+			noteScoresBig.map((s, i) => stats.score.notes[1][0][i] * s).reduce((p, c) => p + c, 0) +
+			noteGogoScoresBig.map((s, i) => stats.score.notes[1][1][i] * s).reduce((p, c) => p + c, 0) +
 			stats.score.balloon[0] * 300 +
 			stats.score.balloon[1] * 360 +
 			stats.score.balloonPop[0] * 5000 +
@@ -475,6 +481,26 @@ $('.controls-score-system .radio').on('click', evt => {
 	}
 	
     updateUI();
+});
+
+$('.download-donscore .button').on('click', async evt => {
+	if (selectedDifficulty === '') return;
+	
+	const fh = await window.showSaveFilePicker({
+		types: [
+			{
+				description: 'Text File',
+				accept: {
+					'text/plain': ['.txt'],
+				},
+			},
+		],
+	});
+	
+	const writable = await fh.createWritable();
+	await writable.write(convertToDonscore(tjaParsed, selectedDifficulty));
+	await writable.close();
+	
 });
 
 window.onload = async function() {

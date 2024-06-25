@@ -225,7 +225,7 @@ function getStatistics(course) {
 	let isBigRenda = false, isGoGoRenda = false, rendaGroup = 0;
     let scCurEventIdx = 0, scCurEvent = course.events[scCurEventIdx];
     let scGogo = 0;
-    let scNotes = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
+    let scNotes = [[[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],[[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]];
     let scBalloon = [0, 0], scBalloonPop = [0, 0];
     let scPotential = 0;
 
@@ -254,7 +254,7 @@ function getStatistics(course) {
 
             const big = v1 === 2 || v1 === 3;
             const scRange = (combo < 10 ? 0 : (combo < 30 ? 1 : (combo < 50 ? 2 : (combo < 100 ? 3 : 4))));
-            scNotes[scGogo][scRange] += big ? 2 : 1;
+            scNotes[big ? 1 : 0][scGogo][scRange] += 1;
 
             let noteScoreBase = (
                 course.headers.scoreInit +
