@@ -14,10 +14,10 @@ import analyseChart from './analyseChart';
 import { embedText } from './embedChart';
 import { convertToDonscore } from './donscore';
 
-import { loadAllFonts } from './font';
+import { loadAllFonts } from './font/font';
 
 import '../css/style.scss';
-import '../css/Pixel-3x5.css';
+import '../css/font/Pixel-3x5.css';
 
 //==============================================================================
 
@@ -498,7 +498,10 @@ $('.download-donscore .button').on('click', async evt => {
 	});
 	
 	const writable = await fh.createWritable();
-	await writable.write(convertToDonscore(tjaParsed, selectedDifficulty));
+	const writeText = convertToDonscore(tjaParsed, selectedDifficulty);
+	
+	const sjisText = iconv.encode(writeText, 'shift_jis');
+	await writable.write(sjisText);
 	await writable.close();
 	
 });

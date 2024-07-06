@@ -1,6 +1,6 @@
 import { drawLine, drawCircle, drawRect, drawText, drawPixelText, drawSprite, drawImageText, initSprites } from './canvasHelper';
 import { toFixedZero } from './main';
-import { callFontSetting, getUraSymbol } from './font';
+import { callFontSetting, getUraSymbol } from './font/font';
 
 //==============================================================================
 // Drawing config and helpers
