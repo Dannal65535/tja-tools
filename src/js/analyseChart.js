@@ -481,7 +481,7 @@ export function predictScore(stats, course, gogoFloor, scoreSystem) {
 						(stats.score.balloonPop[1] * 100);
 		
 		for (let i = 0; i < stats.rendas.length; i++) {
-			scoreTemp += Math.ceil(stats.rendas[i] / rollAC15) * 100;
+			scoreTemp += Math.ceil(stats.rendas[i] / rollAC16) * 100;
 		}
 		//console.log('虹色：'+scoreNiji+'=>'+scoreTemp);
 	}
