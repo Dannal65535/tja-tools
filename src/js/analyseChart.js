@@ -378,3 +378,122 @@ export default function (chart, courseId, branchType) {
 
     return { statistics, graph };
 }
+
+export function predictScore(stats, course, gogoFloor, scoreSystem) {
+	let diffTemp = 0;
+	let scoreInit = 0;
+	let scoreDiff = 0;
+	let scoreShin = 0;
+	let scoreNiji = 0;
+	let scoreGoal = 0;
+	let scoreTemp = 0;
+	const tenjo = [
+		[30,32,34,36,38],
+		[40,45,50,55,60,65,70],
+		[55,60,65,70,75,80,85,90],
+		[70,75,80,85,90,95,100,105,110,120],
+		[70,75,80,85,90,95,100,105,110,120]
+	]
+	const levelMax = [5,7,8,10,10];
+	const autoAC16 = [6.0,7.5,10.0,15.0,15.0];
+	let tempLevel = course.headers.level;
+	if (tempLevel > levelMax[course.course]){
+		tempLevel = levelMax[course.course];
+	}
+	const drop1 = n => Math.floor(n / 10) * 10;
+	const multipliers = [0, 1, 2, 4, 8];
+	let noteScores;
+	let noteScores2;
+	let noteScoresBig;
+	let noteGogoScores;
+	let noteGogoScoresBig;
+	const rollAC15 = 1.0 / 15.0;
+	const rollAC16 = 1.0 / autoAC16[course.course];
+	const rollScore = [[100,200],[120,240]];
+	
+	//AC15
+	scoreGoal = tenjo[course.course][tempLevel - 1] * 10000;
+	while (scoreTemp < scoreGoal){
+		diffTemp++;
+		scoreDiff = Math.ceil(diffTemp / 4);
+		if (diffTemp % 10 == 0)
+			scoreInit += 10;
+		
+		noteScores = multipliers.map(m => drop1(scoreInit + scoreDiff * m));
+		noteScores2 = multipliers.map(m => (scoreInit + scoreDiff * m));
+		noteScoresBig = multipliers.map(m => drop1(scoreInit + scoreDiff * m) * 2);
+		
+		if (gogoFloor === 'AC15') {
+			noteGogoScores = noteScores.map(s => drop1(s * 1.2));
+			noteGogoScoresBig = noteScores.map(s => drop1(s * 1.2) * 2);
+		}
+		else {
+			noteGogoScores = noteScores2.map(s => drop1(s * 1.2));
+			noteGogoScoresBig = noteScores2.map(s => drop1(s * 1.2) * 2);
+		}
+		
+		scoreTemp = (
+			noteScores.map((s, i) => stats.score.notes[0][0][i] * s).reduce((p, c) => p + c, 0) +
+			noteGogoScores.map((s, i) => stats.score.notes[0][1][i] * s).reduce((p, c) => p + c, 0) +
+			noteScoresBig.map((s, i) => stats.score.notes[1][0][i] * s).reduce((p, c) => p + c, 0) +
+			noteGogoScoresBig.map((s, i) => stats.score.notes[1][1][i] * s).reduce((p, c) => p + c, 0) +
+			stats.score.balloon[0] * 300 +
+			stats.score.balloon[1] * 360 +
+			stats.score.balloonPop[0] * 5000 +
+			stats.score.balloonPop[1] * 6000 +
+			Math.floor(stats.totalCombo / 100) * 10000
+		);
+		
+		for (let i = 0; i < stats.rendas.length; i++) {
+			scoreTemp += Math.ceil(stats.rendas[i] / rollAC15)
+			* rollScore[stats.rendaExtends[i].isGoGoRenda][stats.rendaExtends[i].isBigRenda];
+		}
+		//console.log('通常：'+scoreInit+','+scoreDiff+'=>'+scoreTemp);
+	}
+	
+	//Shinuchi
+	scoreTemp = 0;
+	while (scoreTemp < 1000000){
+		scoreShin += 10;
+		
+		scoreTemp = ((stats.totalCombo + (stats.notes[2] + stats.notes[3])) * scoreShin) +
+						 (stats.score.balloon[0] * 300) +
+						 (stats.score.balloon[1] * 300) +
+						 (stats.score.balloonPop[0] * 5000) +
+						 (stats.score.balloonPop[1] * 5000);
+		
+		for (let i = 0; i < stats.rendas.length; i++) {
+			scoreTemp += Math.ceil(stats.rendas[i] / rollAC15)
+			* rollScore[0][stats.rendaExtends[i].isBigRenda];
+		}
+		//console.log('真打：'+scoreShin+'=>'+scoreTemp);
+	}
+	
+	//AC16
+	scoreTemp = 0;
+	while (scoreTemp < 1000000){
+		scoreNiji += 10;
+		
+		scoreTemp = (stats.totalCombo * scoreNiji) +
+						(stats.score.balloon[0] * 100) +
+						(stats.score.balloon[1] * 100) +
+						(stats.score.balloonPop[0] * 100) +
+						(stats.score.balloonPop[1] * 100);
+		
+		for (let i = 0; i < stats.rendas.length; i++) {
+			scoreTemp += Math.ceil(stats.rendas[i] / rollAC15) * 100;
+		}
+		//console.log('虹色：'+scoreNiji+'=>'+scoreTemp);
+	}
+	
+	//Shiage
+	if (scoreSystem === 'CS'){
+		return [scoreInit, scoreDiff, scoreShin];
+	}
+	else if (scoreSystem === 'AC16Old'){
+		return [scoreInit, scoreDiff, scoreNiji];
+	}
+	else {
+		return [scoreNiji, 0, 1000];
+	}
+}

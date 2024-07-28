@@ -11,6 +11,7 @@ import { getCourseLines, getEnabledBranch } from './parseTJA';
 import drawChart from './drawChart';
 import { initUsedSprite } from './drawChart';
 import analyseChart from './analyseChart';
+import { predictScore } from './analyseChart';
 import { embedText } from './embedChart';
 import { convertToDonscore } from './donscore';
 
@@ -38,6 +39,7 @@ let selectedBranch = 'N';
 let selectedPage = 'preview';
 let selectedScoreSystem = 'CS';
 let selectedGogoFloor = 'AC15';
+let selectedCalcMode = 'fromFile';
 
 function displayErrors(message) {
     $errors.text(message);
@@ -150,7 +152,13 @@ function buildStatisticsPage(data) {
     $('.stat-total-combo').text(stats.totalCombo);
 
     const course = tjaParsed.courses[selectedDifficulty];
-    const { scoreInit, scoreDiff, scoreShin } = course.headers;
+    let { scoreInit, scoreDiff, scoreShin } = course.headers;
+	if (selectedCalcMode === 'predict') {
+		const predicted = predictScore(stats, course, selectedGogoFloor, selectedScoreSystem);
+		scoreInit = predicted[0];
+		scoreDiff = predicted[1];
+		scoreShin = predicted[2];
+	}
 
 	$('.stat-level').text('★×' + course.headers.level);
 
@@ -476,8 +484,11 @@ $('.controls-score-system .radio').on('click', evt => {
 	if (name === 'scoreSystem') {
 		selectedScoreSystem = value;
 	}
-	else {
+	else if (name === 'gogoFloor'){
 		selectedGogoFloor = value;
+	}
+	else if (name === 'calcMode'){
+		selectedCalcMode = value;
 	}
 	
     updateUI();
