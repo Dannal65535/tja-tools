@@ -643,7 +643,7 @@ export default function (chart, courseId) {
 							scrollText += 'HS' + toFixedZero(parseFloat(sTemp.value).toFixed(2));
 							drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6), scrollText, 'hs');
 							eventCover.push({
-								stx:ex, sty:y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6),
+								stx:ex + 1, sty:y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6),
 								enx:ex + (6 * scrollText.length) - 1, eny:y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6) + 5,
 							});
 							scrollCount++;
@@ -658,7 +658,7 @@ export default function (chart, courseId) {
 						let bpmText = 'BPM' + toFixedZero(parseFloat(event.value).toFixed(2));
 						drawImageText(ctx, ex, y + ROW_HEIGHT_INFO - 12 + moveEvent, bpmText, 'bpm');
 						eventCover.push({
-							stx:ex, sty:y + ROW_HEIGHT_INFO - 12 + moveEvent,
+							stx:ex + 1, sty:y + ROW_HEIGHT_INFO - 12 + moveEvent,
 							enx:ex + (6 * bpmText.length) - 1, eny:y + ROW_HEIGHT_INFO - 12 + moveEvent + 5,
 						});
                     }
