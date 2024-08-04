@@ -218,10 +218,10 @@ function drawLongSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type) {
         for (let r = sRow + 1; r < eRow; r++) {
             let ry;
 			if (r != undefined) {
-				ry = GET_ROW_Y(r) + (rows[r].branch.indexOf(bt) * 24);
+				ry = GET_ROW_Y(r) + sumNums(rowDeltas, r) + (rows[r].branch.indexOf(bt) * 24);
 			}
 			else {
-				ry = GET_ROW_Y(r) + (rows[rows.length - 1].branch.indexOf(bt) * 24);
+				ry = GET_ROW_Y(r) + sumNums(rowDeltas, r) + (rows[rows.length - 1].branch.indexOf(bt) * 24);
 			}
             let rw = GET_BEAT_X(rows[r].totalBeat) + ROW_TRAILING;
 
@@ -229,7 +229,7 @@ function drawLongSprite(ctx, rows, bt, sRow, sBeat, eRow, eBeat, type) {
                 drawRect(ctx, 0, ry, rw, h, color);
             }
             else {
-                ry += (rows[r].branch.indexOf(bt) * 24) + ROW_OFFSET_NOTE_CENTER - yDelta;
+                ry += ROW_OFFSET_NOTE_CENTER - yDelta;
 				drawRectSprite(ctx, 24, ry, rw - 48, type);
             }
         }
@@ -337,6 +337,7 @@ export default function (chart, courseId) {
 	let preDataNum = 0;
 	let preBranch = [];
 	rowDeltas = [];
+	let moveLineTemp = 0;
 
     for (let midx = 0; midx < course.measures.length; midx++) {
         const measure = course.measures[midx];
@@ -349,8 +350,12 @@ export default function (chart, courseId) {
 			}
 		}
 
+		if (measure.properties.moveLine != undefined && !isNaN(measure.properties.moveLine)) {
+			moveLineTemp = measure.properties.moveLine;
+		}
+
         if (ttRowBeat < rowBeat + measureBeat || measure.properties.ttBreak || (midx > 0 && !compareArray(preBranch, rowBranch))) {
-            rows.push({ beats: rowBeat, measures: rowTemp, dataNum: preDataNum, branch: preBranch});
+            rows.push({ beats: rowBeat, measures: rowTemp, dataNum: preDataNum, branch: preBranch, moveLine: moveLineTemp});
             rowTemp = [];
             rowBeat = 0;
         }
@@ -362,7 +367,7 @@ export default function (chart, courseId) {
     }
 
     if (rowTemp.length)
-        rows.push({ beats: rowBeat, measures: rowTemp, dataNum: preDataNum, branch: preBranch });
+        rows.push({ beats: rowBeat, measures: rowTemp, dataNum: preDataNum, branch: preBranch, moveLine: moveLineTemp });
 
 	for (let ridx = 0; ridx < rows.length; ridx++) {
 		rowDeltas.push((rows[ridx].dataNum - 1) * 24);
@@ -535,6 +540,10 @@ export default function (chart, courseId) {
 
                 beat += mBeat;
             }
+			
+			if (ridx == rows.length - 1 && gogoStart) {
+				drawLong(ctx, rows, gogoStart[0], gogoStart[1], ridx, beat + 0.5, '#ffc0c0', 'gogo');
+			}
         }
 
         for (let ridx = 0; ridx < rows.length; ridx++) {
@@ -548,6 +557,7 @@ export default function (chart, courseId) {
                 const mx = GET_BEAT_X(beat);
                 const measure = measures[midx];
                 const mBeat = measure.length[0] / measure.length[1] * 4;
+				let firstScrollCount = 0;
 
                 // Sub grid
                 const ny = y + ROW_HEIGHT_INFO;
@@ -647,6 +657,9 @@ export default function (chart, courseId) {
 								enx:ex + (6 * scrollText.length) - 1, eny:y + ROW_HEIGHT_INFO - 18 + moveEvent - (scrollCount * 6) + 5,
 							});
 							scrollCount++;
+							if (event.position === 0) {
+								firstScrollCount++;
+							}
 						}
                     }
                     else if (event.name === 'bpm') {
@@ -678,11 +691,14 @@ export default function (chart, courseId) {
 
                 // Measure lines, number
 				const firstLineColor = sectionTemp ? '#ffe400' : '#fff';
+				if (firstScrollCount === 0) {
+					firstScrollCount++;
+				}
 				if (barlineTemp) {
-					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT + rowDeltas[ridx], 2, firstLineColor, eventCover, avoidText);
+					drawLine(ctx, mx, y + moveEventTemp - ((firstScrollCount - 1) * 6), mx, y + ROW_HEIGHT + rowDeltas[ridx], 2, firstLineColor, eventCover, avoidText);
 				}
 				else if (sectionTemp) {
-					drawLine(ctx, mx, y + moveEventTemp, mx, y + ROW_HEIGHT_INFO, 2, firstLineColor, eventCover, avoidText);
+					drawLine(ctx, mx, y + moveEventTemp - ((firstScrollCount - 1) * 6), mx, y + ROW_HEIGHT_INFO, 2, firstLineColor, eventCover, avoidText);
 				}
                 //drawPixelText(ctx, mx + 2, y + ROW_HEIGHT_INFO - 1, measureNumber.toString(), '#000', 'bottom', 'left');
 				drawImageText(ctx, mx, y + ROW_HEIGHT_INFO - 6, measureNumber.toString(), 'num');

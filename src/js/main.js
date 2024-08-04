@@ -14,6 +14,7 @@ import analyseChart from './analyseChart';
 import { predictScore } from './analyseChart';
 import { embedText } from './embedChart';
 import { convertToDonscore } from './donscore';
+//import { convertPngIndexed } from './common';
 
 import { loadAllFonts } from './font/font';
 
@@ -89,12 +90,14 @@ function showPreview() {
 		const $canvas = drawChart(tjaParsed, selectedDifficulty);
 		const $img =  document.createElement('img');
 		$img.id =  'tja-preview';
+		//const indexedImg = convertPngIndexed($canvas.toDataURL());
+		const indexedImg = $canvas.toDataURL();
 		
 		if ($embedDonscore.checked) {
-			$img.src = embedText($canvas.toDataURL(), convertToDonscore(tjaParsed, selectedDifficulty));
+			$img.src = embedText(indexedImg, convertToDonscore(tjaParsed, selectedDifficulty));
 		}
 		else {
-			$img.src = embedText($canvas.toDataURL(), getCourseLines($input.first().value, selectedDifficulty));
+			$img.src = embedText(indexedImg, getCourseLines($input.first().value, selectedDifficulty));
 		}
 		
 		$('.page-preview').append($img);

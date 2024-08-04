@@ -56,6 +56,7 @@ function parseLine(line) {
 		'COUNTCHANGE',
 		'AVOIDTEXTOFF',
 		'AVOIDTEXTON',
+		'MOVELINE',
     ];
 
     let match;
@@ -504,6 +505,10 @@ function getCourse(tjaHeaders, lines) {
 								branch: currentBranch,
                             });
                             break;
+
+						case 'MOVELINE':
+							measureProperties['moveLine'] = parseInt(line.value);
+							break;
 
                         case 'TTBREAK':
 						case 'NEWLINE':
