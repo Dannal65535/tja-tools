@@ -1,3 +1,5 @@
+import pako from 'pako';
+
 function readPNGChunksFromDataURL(dataURL) {
 	const base64Data = dataURL.split(',')[1];
 
@@ -113,4 +115,71 @@ export function embedText(data, text) {
 	let chunks = readPNGChunksFromDataURL(data);
 	chunks = insertChunk(chunks, 1, 'dsCr', Buffer.from(text, 'utf16le'));
 	return createPNGDataURL(chunks);
+}
+
+export function optimizePNG(canvas) {
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const { data, width, height } = imageData;
+
+    const chunks = [
+        createIHDRChunk(width, height),
+        createIDATChunk(data, width, height),
+        createIENDChunk()
+    ];
+
+    return createPNGDataURL(chunks);
+}
+
+function createIHDRChunk(width, height) {
+    const chunkData = Buffer.alloc(13);
+    chunkData.writeUInt32BE(width, 0);
+    chunkData.writeUInt32BE(height, 4);
+    chunkData.writeUInt8(8, 8);  // Bit depth
+    chunkData.writeUInt8(6, 9);  // Color type (RGBA)
+    chunkData.writeUInt8(0, 10); // Compression method
+    chunkData.writeUInt8(0, 11); // Filter method
+    chunkData.writeUInt8(0, 12); // Interlace method
+
+    return {
+        length: 13,
+        type: 'IHDR',
+        data: chunkData,
+        crc: calculateCRC(Buffer.concat([Buffer.from('IHDR'), chunkData]))
+    };
+}
+
+function createIDATChunk(imageData, width, height) {
+    const pixelData = new Uint8Array(width * height * 4 + height);
+    let pixelIndex = 0;
+
+    for (let y = 0; y < height; y++) {
+        pixelData[pixelIndex++] = 0; // No filter for each scanline
+        for (let x = 0; x < width; x++) {
+            const dataIndex = (y * width + x) * 4;
+            pixelData[pixelIndex++] = imageData[dataIndex];     // R
+            pixelData[pixelIndex++] = imageData[dataIndex + 1]; // G
+            pixelData[pixelIndex++] = imageData[dataIndex + 2]; // B
+            pixelData[pixelIndex++] = imageData[dataIndex + 3]; // A
+        }
+    }
+
+    const compressedData = pako.deflate(pixelData);
+    const chunkData = Buffer.from(compressedData);
+
+    return {
+        length: chunkData.length,
+        type: 'IDAT',
+        data: chunkData,
+        crc: calculateCRC(Buffer.concat([Buffer.from('IDAT'), chunkData]))
+    };
+}
+
+function createIENDChunk() {
+    return {
+        length: 0,
+        type: 'IEND',
+        data: Buffer.alloc(0),
+        crc: calculateCRC(Buffer.from('IEND'))
+    };
 }
